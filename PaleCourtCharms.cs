@@ -76,7 +76,7 @@ public void OnLoadLocal(SaveModSettings s)
 
         public static SaveModSettings Settings => Instance?.localSettings;
 
-        public override string GetVersion() => "1.0.0";
+        public override string GetVersion() => "1.0.1";
 
         public PaleCourtCharms() : base("PaleCourtCharms")
         {
