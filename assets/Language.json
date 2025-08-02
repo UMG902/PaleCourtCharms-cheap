@@ -1,0 +1,268 @@
+{
+  "DE": {},
+  "EN": {
+    "UI": {
+      "CHARM_NAME_PURITY": "Mark of Purity",
+      "CHARM_DESC_PURITY": "The Vessel was gifted a Pure Nail forged through arcane means as a reflection of itself. This Charm embodies the echoes of that ancient craftsmanship.<br><br>Hold ATTACK to concentrate and swing the nail in a frenzy. Gradually increases the bearer's rate of attack as they land nail strikes in quick succession.",
+      "CHARM_NAME_LAMENT": "Vessel's Lament",
+      "CHARM_DESC_LAMENT": "Contains the hardships and grievances forced upon the chained Vessel. Energy desperately seeps out from within the constraints.<br><br>Focus to twist the SOUL of enemies marked by the nail and unleash devastating blasts of energy upon them.",
+      "CHARM_NAME_BOON": "Boon of Hallownest",
+      "CHARM_DESC_BOON": "The Pale Wyrm's beacon shines brightly through this Charm. The blessing bestowed upon the land known as Hallownest was able to elevate the lesser bugs that resided in the domain.<br><br>Transforms all spells to take on a purified form.",
+      "CHARM_NAME_BLOOM": "Abyssal Bloom",
+      "CHARM_DESC_BLOOM": "A dark blossom that was cursed to restrain an uncontrollable power. Even though the darkness within may be repressed, it writhes in a volatile manner threatening to break free.<br><br>The bearer gains overwhelming power as they draw nearer to death.",
+      "CHARM_NAME_HONOUR": "King's Honour",
+      "CHARM_DESC_HONOUR": "Unique charm bestowed by the King to his most loyal knight. Refurbished and restored to its original state.<br><br>Surrounds the bearer in a royal and heroic aura."
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "Mark of Purity",
+      "CHARM_DESC_PURITY": "The Vessel was gifted a Pure Nail forged through arcane means as a reflection of itself. This Charm embodies the echoes of that ancient craftsmanship.<br><br>Hold ATTACK to concentrate and swing the nail in a frenzy. Gradually increases the bearer's rate of attack as they land nail strikes in quick succession.",
+      "CHARM_NAME_LAMENT": "Vessel's Lament",
+      "CHARM_DESC_LAMENT": "Contains the hardships and grievances forced upon the chained Vessel. Energy desperately seeps out from within the constraints.<br><br>Focus to twist the SOUL of enemies marked by the nail and unleash devastating blasts of energy upon them.",
+      "CHARM_NAME_BOON": "Boon of Hallownest",
+      "CHARM_DESC_BOON": "The Pale Wyrm's beacon shines brightly through this Charm. The blessing bestowed upon the land known as Hallownest was able to elevate the lesser bugs that resided in the domain.<br><br>Transforms all spells to take on a purified form.",
+      "CHARM_NAME_BLOOM": "Abyssal Bloom",
+      "CHARM_DESC_BLOOM": "A dark blossom that was cursed to restrain an uncontrollable power. Even though the darkness within may be repressed, it writhes in a volatile manner threatening to break free.<br><br>The bearer gains overwhelming power as they draw nearer to death.",
+      "CHARM_NAME_HONOUR": "King's Honour",
+      "CHARM_DESC_HONOUR": "Unique charm bestowed by the King to his most loyal knight. Refurbished and restored to its original state.<br><br>Surrounds the bearer in a royal and heroic aura.",
+      "CUSTOM_ITEM_INTROS": "Received the"
+    },
+    "RANDO": {
+      "SHOP_DESCRIPTION_MarkOfPurity": "I see you wield a nail, and this charm looks to be made out of nails.<br>It will be yours... for a price.",
+      "SHOP_DESCRIPTION_VesselsLament": "I heard this charm is very good, but never risked to try myself.<br>Pay up, and you can find out if what they say is true.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Found this lying around in fungal. I get shivers just by looking at it, and it looks very important.<br><br>Do you want it?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "I bought this from some wierd-looking bug for a handful of geo.<br><br>I'll sell it to you if you pay enough.",
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
+    }
+  },
+  "ES": {
+    "UI": {
+      "CHARM_NAME_PURITY": "Marca de pureza",
+      "CHARM_DESC_PURITY": "Al Receptáculo se le otorgó un Aguijón puro forjado por métodos arcanos como un reflejo de sí mismo. Este amuleto personifica el eco de aquella artesanía arcaica.<br><br>Mantén ATACAR para concentrarte y blandir la espada frenéticamente. Aumenta de forma gradual la velocidad de ataque del portador a medida que asesta golpes sucesivamente.",
+      "CHARM_NAME_LAMENT": "Lamento del Receptáculo",
+      "CHARM_DESC_LAMENT": "Contiene las adversidades e injusticias que se le impusieron al Receptáculo encadenado. La energía se filtra desesperada por salir de las ataduras.<br><br>Al concentrar retuerce el ALMA de los enemigos marcados por el aguijón y libera devastadoras descargas de energía sobre ellos.",
+      "CHARM_NAME_BOON": "Bendición de Hallownest",
+      "CHARM_DESC_BOON": "La guía del Pálido Wyrm brilla con fuerza en este amuleto. La bendición conferida a la tierra conocida como Hallownest logró elevar a los insectos inferiores que residían en su dominio.<br><br>Transforma todos los hechizos para que adquieran una apariencia purificada.",
+      "CHARM_NAME_BLOOM": "Retoño abismal",
+      "CHARM_DESC_BLOOM": "Una flor oscura que fue maldecida para contener un poder incontrolable. Aunque la oscuridad interior esté comprimida, se retuerce de manera volátil, amenazando con liberarse.<br><br>El portador obtiene un poder abrumador cuando está cercano a la muerte.",
+      "CHARM_NAME_HONOUR": "Honor del rey",
+      "CHARM_DESC_HONOUR": "Un amuleto único otorgado por el rey a su Caballero más leal. Renovado y restaurado a su estado original.<br><br>Rodea al portador en un aura real y heroica."
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "Marca de pureza",
+      "CHARM_DESC_PURITY": "Al Receptáculo se le otorgó un Aguijón puro forjado por métodos arcanos como un reflejo de sí mismo. Este amuleto personifica el eco de aquella artesanía arcaica.<br><br>Mantén ATACAR para concentrarte y blandir la espada frenéticamente. Aumenta de forma gradual la velocidad de ataque del portador a medida que asesta golpes sucesivamente.",
+      "CHARM_NAME_LAMENT": "Lamento del Receptáculo",
+      "CHARM_DESC_LAMENT": "Contiene las adversidades e injusticias que se le impusieron al Receptáculo encadenado. La energía se filtra desesperada por salir de las ataduras.<br><br>Al concentrar retuerce el ALMA de los enemigos marcados por el aguijón y libera devastadoras descargas de energía sobre ellos.",
+      "CHARM_NAME_BOON": "Bendición de Hallownest",
+      "CHARM_DESC_BOON": "La guía del Pálido Wyrm brilla con fuerza en este amuleto. La bendición conferida a la tierra conocida como Hallownest logró elevar a los insectos inferiores que residían en su dominio.<br><br>Transforma todos los hechizos para que adquieran una apariencia purificada.",
+      "CHARM_NAME_BLOOM": "Retoño abismal",
+      "CHARM_DESC_BLOOM": "Una flor oscura que fue maldecida para contener un poder incontrolable. Aunque la oscuridad interior esté comprimida, se retuerce de manera volátil, amenazando con liberarse.<br><br>El portador obtiene un poder abrumador cuando está cercano a la muerte.",
+      "CHARM_NAME_HONOUR": "Honor del rey",
+      "CHARM_DESC_HONOUR": "Un amuleto único otorgado por el rey a su Caballero más leal. Renovado y restaurado a su estado original.<br><br>Rodea al portador en un aura real y heroica.",
+      "CUSTOM_ITEM_INTROS": "Has recibido"
+    },    "RANDO": {
+      "SHOP_DESCRIPTION_MarkOfPurity": "I see you wield a nail, and this charm looks to be made out of nails.<br>It will be yours... for a price.",
+      "SHOP_DESCRIPTION_VesselsLament": "I heard this charm is very good, but never risked to try myself.<br>Pay up, and you can find out if what they say is true.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Found this lying around in fungal. I get shivers just by looking at it, and it looks very important.<br><br>Do you want it?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "I bought this from some wierd-looking bug for a handful of geo.<br><br>I'll sell it to you if you pay enough.",
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
+    }
+  },
+  "FR": {
+    "UI": {
+      "CHARM_NAME_PURITY": "Marque de Pureté",
+      "CHARM_DESC_PURITY": "Le Vaisseau a reçu un Aiguillon pur façonné comme réflexion de sa nature profonde. Ce Charme est une marque physique de cet ancien rituel.<br><br>Maintenez ATTAQUE pour vous concentrer et asséner des volées de coups. Augmente la vitesse d'attaque du porteur tant qu'il donne des coups.",
+      "CHARM_NAME_LAMENT": "Lamentation du Vaisseau",
+      "CHARM_DESC_LAMENT": "Contient les souffrances et regrets imposés au Vaisseau enchaîné. De l'énergie s'échappe vainement de ses bordures.<br><br>Canaliser pour tordre l'Âme des ennemis touchés par l'aiguillon et libérer de dévastatrices explosions d'énergie autour d'eux.",
+      "CHARM_NAME_BOON": "Bénédiction d'Hallownest",
+      "CHARM_DESC_BOON": "Le fanal du Wyrm pâle apparaît brillamment dans ce Charme. La bénédiction qu'a reçue la terre connue sous le nom d'Hallownest fit grandir les simples insectes qui y résidaient.<br><br>Change les sorts pour leur faire prendre une forme purifiée.",
+      "CHARM_NAME_BLOOM": "Fleur Abyssale",
+      "CHARM_DESC_BLOOM": "Une fleur obscure, condamnée à restreindre un pouvoir incontrôlable. Même si l'obscurité est contenue, elle se tord et s'agite violemment, menaçant de s'échapper à tout instant.<br><br>Le porteur obtient une force considérable lorsqu'il s'approche de la mort.",
+      "CHARM_NAME_HONOUR": "Honneur du Roi",
+      "CHARM_DESC_HONOUR": "Un Charme unique offert par le roi d'Hallownest à son plus fidèle chevalier. Poli et restauré à son état d'origine.<br><br>Entoure son porteur d'une aura royale et héroïque."
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "Marque de Pureté",
+      "CHARM_DESC_PURITY": "Le Vaisseau a reçu un Aiguillon pur façonné comme réflexion de sa nature profonde. Ce Charme est une marque physique de cet ancien rituel.<br><br>Maintenez ATTAQUE pour vous concentrer et asséner des volées de coups. Augmente la vitesse d'attaque du porteur tant qu'il donne des coups.",
+      "CHARM_NAME_LAMENT": "Lamentation du Vaisseau",
+      "CHARM_DESC_LAMENT": "Contient les souffrances et regrets imposés au Vaisseau enchaîné. De l'énergie s'échappe vainement de ses bordures.<br><br>Canaliser pour tordre l'Âme des ennemis touchés par l'aiguillon et libérer de dévastatrices explosions d'énergie autour d'eux.",
+      "CHARM_NAME_BOON": "Bénédiction d'Hallownest",
+      "CHARM_DESC_BOON": "Le fanal du Wyrm pâle apparaît brillamment dans ce Charme. La bénédiction qu'a reçue la terre connue sous le nom d'Hallownest fit grandir les simples insectes qui y résidaient.<br><br>Change les sorts pour leur faire prendre une forme purifiée.",
+      "CHARM_NAME_BLOOM": "Fleur Abyssale",
+      "CHARM_DESC_BLOOM": "Une fleur obscure, condamnée à restreindre un pouvoir incontrôlable. Même si l'obscurité est contenue, elle se tord et s'agite violemment, menaçant de s'échapper à tout instant.<br><br>Le porteur obtient une force considérable lorsqu'il s'approche de la mort.",
+      "CHARM_NAME_HONOUR": "Honneur du Roi",
+      "CHARM_DESC_HONOUR": "Un Charme unique offert par le roi d'Hallownest à son plus fidèle chevalier. Poli et restauré à son état d'origine.<br><br>Entoure son porteur d'une aura royale et héroïque.",
+      "CUSTOM_ITEM_INTROS": "Vous avez reçu"
+    },    "RANDO": {
+         "SHOP_DESCRIPTION_MarkOfPurity": "I see you wield a nail, and this charm looks to be made out of nails.<br>It will be yours... for a price.",
+      "SHOP_DESCRIPTION_VesselsLament": "I heard this charm is very good, but never risked to try myself.<br>Pay up, and you can find out if what they say is true.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Found this lying around in fungal. I get shivers just by looking at it, and it looks very important.<br><br>Do you want it?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "I bought this from some wierd-looking bug for a handful of geo.<br><br>I'll sell it to you if you pay enough.",
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
+    }
+  },
+  "IT": {
+    "UI": {
+      "CHARM_NAME_PURITY": "Marchio della Purezza",
+      "CHARM_DESC_PURITY": "Al Ricettacolo è stato donato un Aculeo Puro forgiato secondo le arcane tradizioni come riflesso di chi lo brandisce. Questo Amuleto incarna gli echi di quell'antica maestria.<br><br>Tieni premuto ATTACCO per concentrarti ed eseguire frenetici fendenti. Colpendo i nemici aumenta gradualmente la velocità d'attacco.",
+      "CHARM_NAME_LAMENT": "Lamento del Ricettacolo",
+      "CHARM_DESC_LAMENT": "Contiene gli stenti e i lamenti imposti al Ricettacolo incatenato. Energia fuoriesce disperatamente dai sigilli.<br><br>Concentrati per torcere l'ANIMA dei nemici segnati dall'aculeo e rilasciare su di loro delle esplosioni devastanti di energia.",
+      "CHARM_NAME_BOON": "Dono di Nidosacro",
+      "CHARM_DESC_BOON": "Il faro dell'Uroverme Pallido brilla luminoso da questo Amuleto. La benedizione conferita nella terra conosciuta come Nidosacro ha elevato i semplici insetti che abitano nel dominio.<br><br>Trasforma tutti gli incantesimi facendoli assumere una forma purificata.",
+      "CHARM_NAME_BLOOM": "Fiore Abissale",
+      "CHARM_DESC_BLOOM": "Un oscuro fiore, condannato a trattenere un potere incontrollabile. Sebbene l'oscurità al suo interno paia repressa, si contorce instabile minacciando di liberarsi.<br><br>Chi lo indossa diventa sempre più forte mentre è più prossimo alla morte.",
+      "CHARM_NAME_HONOUR": "Onore del Re",
+      "CHARM_DESC_HONOUR": "Amuleto unico donato dal Re al suo più fedele cavaliere. Rinnovato e riportato al suo stato originale.<br><br>Dona a chi lo indossa un'aura eroica e regale."
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "Marchio della Purezza",
+      "CHARM_DESC_PURITY": "Al Ricettacolo è stato donato un Aculeo Puro forgiato secondo le arcane tradizioni come riflesso di chi lo brandisce. Questo Amuleto incarna gli echi di quell'antica maestria.<br><br>Tieni premuto ATTACCO per concentrarti ed eseguire frenetici fendenti. Colpendo i nemici aumenta gradualmente la velocità d'attacco.",
+      "CHARM_NAME_LAMENT": "Lamento del Ricettacolo",
+      "CHARM_DESC_LAMENT": "Contiene gli stenti e i lamenti imposti al Ricettacolo incatenato. Energia fuoriesce disperatamente dai sigilli.<br><br>Concentrati per torcere l'ANIMA dei nemici segnati dall'aculeo e rilasciare su di loro delle esplosioni devastanti di energia.",
+      "CHARM_NAME_BOON": "Dono di Nidosacro",
+      "CHARM_DESC_BOON": "Il faro dell'Uroverme Pallido brilla luminoso da questo Amuleto. La benedizione conferita nella terra conosciuta come Nidosacro ha elevato i semplici insetti che abitano nel dominio.<br><br>Trasforma tutti gli incantesimi facendoli assumere una forma purificata.",
+      "CHARM_NAME_BLOOM": "Fiore Abissale",
+      "CHARM_DESC_BLOOM": "Un oscuro fiore, condannato a trattenere un potere incontrollabile. Sebbene l'oscurità al suo interno paia repressa, si contorce instabile minacciando di liberarsi.<br><br>Chi lo indossa diventa sempre più forte mentre è più prossimo alla morte.",
+      "CHARM_NAME_HONOUR": "Onore del Re",
+      "CHARM_DESC_HONOUR": "Amuleto unico donato dal Re al suo più fedele cavaliere. Rinnovato e riportato al suo stato originale.<br><br>Dona a chi lo indossa un'aura eroica e regale.",
+      "CUSTOM_ITEM_INTROS": "Hai ricevuto:"
+    },    "RANDO": {
+      "SHOP_DESCRIPTION_MarkOfPurity": "Vedo che impugni un chiodo, e questo amuleto sembra fatto di chiodi.<br>Sarà tuo...al giusto prezzo.",
+      "SHOP_DESCRIPTION_VesselsLament": "Ho sentito dire che questo amuleto è molto potente, ma non ho mai avuto il coraggio di provarlo.<br>Dammi del denaro e potrai scoprire tu stesso se ciò che dicono è vero.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Ho trovato questo nei pressi delle Caverne Fungine. mi vengono i brividi solo a guardarlo, e sembra molto potente. <br><br>Lo vuoi?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "Ho comprato questo da un insetto bizzarro per una manciata di Geo <br><br>Posso vendertelo se mi paghi abbastanza.",
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim mi ha lasciato questo, penso che tu ne abbia bisogno di più.\n\nPotenzia Stemma del difensore trasformandolo in Onore del re."
+    }
+  },
+  "JA": {
+    "UI": {
+      "CHARM_NAME_PURITY": "純粋な印",
+      "CHARM_DESC_PURITY": "器は自身の化身として、神秘な作法で鍛造された純粋な釘を与えられた。このチャームはその鍛造術の残響を具現化したもの。<br><br>攻撃ボタンを押しつづけることで釘を高速で切り裂くことが可能。短時間で攻撃を当てつづけることで徐々に攻撃速度が上がる。",
+      "CHARM_NAME_LAMENT": "器の悲歌",
+      "CHARM_DESC_LAMENT": "拘束された器に押しつけられた苦難と恨みが込められている。隅々からエネルギーが必死に漏れ出ている。<br><br>釘で斬った敵をマーキングする。ソウルをフォーカスしたとき、マーキングされた敵の近くにソウルの爆発を出現させる。",
+      "CHARM_NAME_BOON": "ハロウネストの功徳",
+      "CHARM_DESC_BOON": "蒼白なるウィルムの灯光がまぶしく輝いているチャーム。ウィルムがハロウネストに与えた祝福は、弱小なムシに思考を与えた。<br><br>ソウルを使った攻撃を純粋な型に変える。",
+      "CHARM_NAME_BLOOM": "漆黒の華",
+      "CHARM_DESC_BLOOM": "制御できない力が呪文で封じ込められている花。中の虚無は封じられているが、今にも抜け出しそう。<br><br>身につけたものが死に近づくほど強大な力を手に入れる。",
+      "CHARM_NAME_HONOUR": "王の誉れ",
+      "CHARM_DESC_HONOUR": "ハロウネストの王がもっとも忠実な騎士に対して与えた、特別なチャーム。元の姿に復元されている。<br><br>身につけた者から気高く英雄的なオーラが放たれるようになる。"
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "純粋な印",
+      "CHARM_DESC_PURITY": "器は自身の化身として、神秘な作法で鍛造された純粋な釘を与えられた。このチャームはその鍛造術の残響を具現化したもの。<br><br>攻撃ボタンを押しつづけることで釘を高速で切り裂くことが可能。短時間で攻撃を当てつづけることで徐々に攻撃速度が上がる。",
+      "CHARM_NAME_LAMENT": "器の悲歌",
+      "CHARM_DESC_LAMENT": "拘束された器に押しつけられた苦難と恨みが込められている。隅々からエネルギーが必死に漏れ出ている。<br><br>釘で斬った敵をマーキングする。ソウルをフォーカスしたとき、マーキングされた敵の近くにソウルの爆発を出現させる。",
+      "CHARM_NAME_BOON": "ハロウネストの功徳",
+      "CHARM_DESC_BOON": "蒼白なるウィルムの灯光がまぶしく輝いているチャーム。ウィルムがハロウネストに与えた祝福は、弱小なムシに思考を与えた。<br><br>ソウルを使った攻撃を純粋な型に変える。",
+      "CHARM_NAME_BLOOM": "漆黒の華",
+      "CHARM_DESC_BLOOM": "制御できない力が呪文で封じ込められている花。中の虚無は封じられているが、今にも抜け出しそう。<br><br>身につけたものが死に近づくほど強大な力を手に入れる。",
+      "CHARM_NAME_HONOUR": "王の誉れ",
+      "CHARM_DESC_HONOUR": "ハロウネストの王がもっとも忠実な騎士に対して与えた、特別なチャーム。元の姿に復元されている。<br><br>身につけた者から気高く英雄的なオーラが放たれるようになる。",
+      "CUSTOM_ITEM_INTROS": " "
+    },    "RANDO": {
+         "SHOP_DESCRIPTION_MarkOfPurity": "I see you wield a nail, and this charm looks to be made out of nails.<br>It will be yours... for a price.",
+      "SHOP_DESCRIPTION_VesselsLament": "I heard this charm is very good, but never risked to try myself.<br>Pay up, and you can find out if what they say is true.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Found this lying around in fungal. I get shivers just by looking at it, and it looks very important.<br><br>Do you want it?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "I bought this from some wierd-looking bug for a handful of geo.<br><br>I'll sell it to you if you pay enough.",
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
+    }
+  },
+  "PT": {
+    "UI": {
+      "CHARM_NAME_PURITY": "Marca da Pureza",
+      "CHARM_DESC_PURITY": "O Receptáculo foi presenteado com um Ferrão Puro forjado por meios arcanos como um reflexo de si mesmo. Este Amuleto incorpora os ecos daquela antiga e esquecida arte.<br><br>Mantenha pressionado Ataque para se concentrar e balançar o ferrão em um verdadeiro frenesi. Aumenta gradualmente a velocidade de ataque do portador à medida que ele desfere golpes de ferrão rapidamente.",
+      "CHARM_NAME_LAMENT": "Lamento do Receptáculo",
+      "CHARM_DESC_LAMENT": "Contém as dificuldades e queixas impostas ao Vessel acorrentado. A energia escapa desesperadamente de dentro das limitações.<br><br>Ao focar ALMA, libera uma explosão devastadora de energia.",
+      "CHARM_NAME_BOON": "Benção de Hallownest",
+      "CHARM_DESC_BOON": "O brilho do Rei Pálido brilha intensamente através deste amuleto. A bênção e o poder concedidos à terra conhecida como Hallownest foram capazes de elevar os insetos menores que residiam no domínio.<br><br>Transforma todas as magias, fazendo com que assumam uma forma purificada.",
+      "CHARM_NAME_BLOOM": "Flor Abissal",
+      "CHARM_DESC_BLOOM": "Uma pálida flor que foi amaldiçoada para conter um poder incontrolável. Mesmo que a escuridão interior possa estar reprimida, ela se contorce de maneira volátil, ameaçando escapar.<br><br>O portador fica mais forte à medida que se aproxima da morte, ganhando um poder esmagador.",
+      "CHARM_NAME_HONOUR": "Honra do Rei",
+      "CHARM_DESC_HONOUR": "Um amuleto único concedido pelo Rei ao seu cavaleiro mais leal. Restaurado e revitalizado ao seu estado final.<br><br>Envolve o portador em uma aura real."
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "Marca da Pureza",
+      "CHARM_DESC_PURITY": "O Receptáculo foi presenteado com um Ferrão Puro forjado por meios arcanos como um reflexo de si mesmo. Este Amuleto incorpora os ecos daquela antiga e esquecida arte.<br><br>Mantenha pressionado Ataque para se concentrar e balançar o ferrão em um verdadeiro frenesi. Aumenta gradualmente a velocidade de ataque do portador à medida que ele desfere golpes de ferrão rapidamente.",
+      "CHARM_NAME_LAMENT": "Lamento do Receptáculo",
+      "CHARM_DESC_LAMENT": "Contém as dificuldades e queixas impostas ao Vessel acorrentado. A energia escapa desesperadamente de dentro das limitações.<br><br>Ao focar ALMA, libera uma explosão devastadora de energia.",
+      "CHARM_NAME_BOON": "Benção de Hallownest",
+      "CHARM_DESC_BOON": "O brilho do Rei Pálido brilha intensamente através deste amuleto. A bênção e o poder concedidos à terra conhecida como Hallownest foram capazes de elevar os insetos menores que residiam no domínio.<br><br>Transforma todas as magias, fazendo com que assumam uma forma purificada.",
+      "CHARM_NAME_BLOOM": "Flor Abissal",
+      "CHARM_DESC_BLOOM": "Uma pálida flor que foi amaldiçoada para conter um poder incontrolável. Mesmo que a escuridão interior possa estar reprimida, ela se contorce de maneira volátil, ameaçando escapar.<br><br>O portador fica mais forte à medida que se aproxima da morte, ganhando um poder esmagador.",
+      "CHARM_NAME_HONOUR": "Honra do Rei",
+      "CHARM_DESC_HONOUR": "Um amuleto único concedido pelo Rei ao seu cavaleiro mais leal. Restaurado e revitalizado ao seu estado final.<br><br>Envolve o portador em uma aura real.",
+      "CUSTOM_ITEM_INTROS": "Recebido"
+    },    "RANDO": {
+        "SHOP_DESCRIPTION_MarkOfPurity": "I see you wield a nail, and this charm looks to be made out of nails.<br>It will be yours... for a price.",
+      "SHOP_DESCRIPTION_VesselsLament": "I heard this charm is very good, but never risked to try myself.<br>Pay up, and you can find out if what they say is true.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Found this lying around in fungal. I get shivers just by looking at it, and it looks very important.<br><br>Do you want it?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "I bought this from some wierd-looking bug for a handful of geo.<br><br>I'll sell it to you if you pay enough.",
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
+    }
+  },
+  "RU": {
+    "UI": {
+      "CHARM_NAME_PURITY": "Метка Чистоты",
+      "CHARM_DESC_PURITY": "Сосуду был дарован магией кованный Чистый гвоздь, как отражение самого себя. Сей Амулет преисполнен эхом того же древнего мастерства.<br><br>Зажми УДАР, чтобы сконцентрироваться и яростно махать гвоздем без остановки. Постепенно увеличивает частоту атак своего носителя с каждым успешным ударом гвоздя.",
+      "CHARM_NAME_LAMENT": "Стенания Сосуда",
+      "CHARM_DESC_LAMENT": "Содержит тяготы и горести, возложенные на окованный Сосуд. Энергия отчаянно просачивается изнутри стеснений Амулета.<br><br>Сфокусируйся, чтобы исказить ДУШУ врагов, отмеченных гвоздем, и обрушить на них изничтожающие всполохи энергии.",
+      "CHARM_NAME_BOON": "Дар Халлоунеста",
+      "CHARM_DESC_BOON": "Маяк Бледного Черва ярко сияет через этот Амулет. Благословение, дарованное землям, известным как Халлоунест, смогло возвысить низших жуков, обитавших в этом крае.<br><br>Преобразует все заклинания, придавая им очищенную форму.",
+      "CHARM_NAME_BLOOM": "Соцветие Бездны",
+      "CHARM_DESC_BLOOM": "Темный цветок, проклятый на сдерживание неконтролируемой силы. Пускай тьма внутри и подавлена, она все еще безудержно колышется, угрожая выбраться наружу.<br><br>Придает носителю непреодолимую мощь по мере приближения к смерти.",
+      "CHARM_NAME_HONOUR": "Честь Короля",
+      "CHARM_DESC_HONOUR": "Уникальный Амулет, врученный Королем своему самому верному рыцарю. Восстановлен и приведен к первоначальному виду.<br><br>Аура его носителя приобретет королевский и героический аромат."
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "Метка Чистоты",
+      "CHARM_DESC_PURITY": "Сосуду был дарован магией кованный Чистый гвоздь, как отражение самого себя. Сей Амулет преисполнен эхом того же древнего мастерства.<br><br>Зажми УДАР, чтобы сконцентрироваться и яростно махать гвоздем без остановки. Постепенно увеличивает частоту атак своего носителя с каждым успешным ударом гвоздя.",
+      "CHARM_NAME_LAMENT": "Стенания Сосуда",
+      "CHARM_DESC_LAMENT": "Содержит тяготы и горести, возложенные на окованный Сосуд. Энергия отчаянно просачивается изнутри стеснений амулета.<br><br>Сфокусируйся, чтобы исказить ДУШУ врагов, отмеченных гвоздем, и обрушить на них изничтожающие всполохи энергии.",
+      "CHARM_NAME_BOON": "Дар Халлоунеста",
+      "CHARM_DESC_BOON": "Маяк Бледного Черва ярко сияет через этот Амулет. Благословение, дарованное землям, известным как Халлоунест, смогло возвысить низших жуков, обитавших в этом крае.<br><br>Преобразует все заклинания, придавая им очищенную форму.",
+      "CHARM_NAME_BLOOM": "Соцветие Бездны",
+      "CHARM_DESC_BLOOM": "Темный цветок, проклятый на сдерживание неконтролируемой силы. Пускай тьма внутри и подавлена, она все еще безудержно колышется, угрожая выбраться наружу.<br><br>Придает носителю непреодолимую мощь по мере приближения к смерти.",
+      "CHARM_NAME_HONOUR": "Честь Короля",
+      "CHARM_DESC_HONOUR": "Уникальный Амулет, врученный Королем своему самому верному рыцарю. Восстановлен и приведен к первоначальному виду.<br><br>Аура его носителя приобретет королевский и героический аромат.",
+      "CUSTOM_ITEM_INTROS": "Найден амулет"
+    },    "RANDO": {
+      "SHOP_DESCRIPTION_MarkOfPurity": "Я смотрю, ты сражаешься гвоздем? А этот амулет будто сделан из гвоздей.<br>Он может стать твоим… если заплатишь.",
+      "SHOP_DESCRIPTION_VesselsLament": "Ходят слухи,что этот амулет силен,но я никогда не решался(ась) попробовать.<br>Заплатишь,и сможешь проверить эти слухи.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Нашел это среди грибов. Меня дрожь берет, когда держу его в руках, да и выглядит внушительно.<br><br>Хочешь отдам?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "Этот амулет стоил мне немало гео… а продал его мне странный тип…<br><br>В общем, заплатишь достаточно — и он твой.",
+      "SHOP_DESCRIPTION_HONOUR": "Огрим отдал мне это. Я думаю,тебе больше пригодиться.<br><br>Улучшает Герб Защитника до Чести Короля."
+    }
+  },
+  "KO": {
+    "UI": {
+      "CHARM_NAME_PURITY": "순수함의 징표",
+      "CHARM_DESC_PURITY": "그릇은 자신을 닮은 신비한 방법으로 제련된 순수한 대못을 하사받았습니다. 이 부적은 메아리치는 그 고대의 장인정신을 형체로 구현합니다.<br><br>공격 버튼을 눌러 대못을 마구 휘두를 수 있게 됩니다. 연속으로 대못 타격시 점점 공격속도를 늘려줍니다.",
+      "CHARM_NAME_LAMENT": "그릇의 애도",
+      "CHARM_DESC_LAMENT": "사슬에 묶인 그릇에 강요된 어려움과 슬픔을 담고 있습니다. 구속 안에서 에너지가 필사적으로 새어나오고 있습니다.<br><br>집중 시 대못으로 찍힌 적들의 영혼을 뒤틀어 파괴적인 에너지를 방출합니다.",
+      "CHARM_NAME_BOON": "신성둥지의 보물",
+      "CHARM_DESC_BOON": "창백한 웜의 가호가 밝게 빛나고 있는 부적입니다. 신성둥지라 불리는 이 땅에 내려진 축복은 그곳의 하등한 벌레들을 깨우치게 해 주었습니다.<br><br>모든 주문을 정제된 형태로 바꿉니다.",
+      "CHARM_NAME_BLOOM": "심연의 꽃",
+      "CHARM_DESC_BLOOM": "통제할 수 없는 힘을 구속하라는 저주를 받은 검은 꽃입니다. 내부의 어둠이 억압되고 있지만, 빠져나가기 위해 격렬히 몸부림치고 있습니다.<br><br>착용자가 죽음에 가까워질수록 압도적인 힘을 얻게 됩니다.",
+      "CHARM_NAME_HONOUR": "왕의 명예",
+      "CHARM_DESC_HONOUR": "왕이 가장 충성스러운 신하에게 하사한 부적입니다. 원래 상태로 회복되었습니다.<br><br>착용자를 왕실의 영웅적 냄새로 감싸줍니다."
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "순수함의 징표",
+      "CHARM_DESC_PURITY": "그릇은 자신을 닮은 신비한 방법으로 제련된 순수한 대못을 하사받았습니다. 이 부적은 메아리치는 그 고대 장인정신을 형체로 구현합니다.<br><br>공격 버튼을 눌러 대못을 마구 휘두를 수 있게 됩니다. 연속으로 대못 타격시 점점 공격속도를 늘려줍니다.",
+      "CHARM_NAME_LAMENT": "그릇의 애도",
+      "CHARM_DESC_LAMENT": "사슬에 묶인 그릇에 강요된 어려움과 슬픔을 담고 있습니다. 구속 안에서 에너지가 필사적으로 새어나오고 있습니다.<br><br>집중 시 대못으로 찍힌 적들의 영혼을 뒤틀어 파괴적인 에너지를 방출합니다.",
+      "CHARM_NAME_BOON": "신성둥지의 보물",
+      "CHARM_DESC_BOON": "창백한 웜의 가호가 밝게 빛나고 있는 부적입니다. 신성둥지라 불리는 이 땅에 내려진 축복은 그곳의 하등한 벌레들을 깨우치게 해 주었습니다.<br><br>모든 주문을 정제된 형태로 바꿉니다.",
+      "CHARM_NAME_BLOOM": "심연의 꽃",
+      "CHARM_DESC_BLOOM": "통제할 수 없는 힘을 구속하라는 저주를 받은 검은 꽃입니다. 내부의 어둠이 억압되고 있지만, 빠져나가기 위해 격렬히 몸부림치고 있습니다.<br><br>착용자가 죽음에 가까워질수록 압도적인 힘을 얻게 됩니다.",
+      "CHARM_NAME_HONOUR": "왕의 명예",
+      "CHARM_DESC_HONOUR": "왕이 가장 충성스러운 신하에게 하사한 부적입니다. 원래 상태로 회복되었습니다.<br><br>착용자를 왕실의 영웅적 냄새로 감싸줍니다.",
+      "CUSTOM_ITEM_INTROS": "받음"
+    },    "RANDO": {
+         "SHOP_DESCRIPTION_MarkOfPurity": "I see you wield a nail, and this charm looks to be made out of nails.<br>It will be yours... for a price.",
+      "SHOP_DESCRIPTION_VesselsLament": "I heard this charm is very good, but never risked to try myself.<br>Pay up, and you can find out if what they say is true.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Found this lying around in fungal. I get shivers just by looking at it, and it looks very important.<br><br>Do you want it?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "I bought this from some wierd-looking bug for a handful of geo.<br><br>I'll sell it to you if you pay enough.",
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
+    }
+  }
+}
