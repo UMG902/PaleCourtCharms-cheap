@@ -24,7 +24,7 @@ namespace PaleCourtCharms
     IGlobalSettings<GlobalSettings>
     {
         public static PaleCourtCharms Instance;
-
+public static LanguageStrings LangStrings;
         public static readonly List<CharmDefinition> Charms = new();
         public static readonly string[] CharmKeys = { "Mark_of_Purity", "Vessels_Lament", "Boon_of_Hallownest", "Abyssal_Bloom" };
         public static readonly int[] CharmCosts = { 3, 2, 4, 5 };
@@ -82,19 +82,24 @@ public void OnLoadLocal(SaveModSettings s)
         {
             if (ModHooks.GetMod("FiveKnights") is Mod)
             {
-                Log("[Warning]Detected PaleCourt,disabling mod.Note:you'll see a few more errors,that's normal.");
+                Log("[Warning] Detected PaleCourt, disabling mod. Note: you'll see a few more errors, that's normal.");
                 return;
             }
 
             Instance = this;
             Log("PaleCourtCharms initialized.");
+        LangStrings = new LanguageStrings(Assembly.GetExecutingAssembly(), "PaleCourtCharms.assets.Language.json");
 
             LoadEmbeddedSprites();
 
-            Charms.Add(new CharmDefinition { InternalName = "MarkOfPurity", DisplayName = "Mark of Purity", Description = "The Vessel was gifted a Pure Nail forged <br>through arcane means as a reflection of itself.<br>This Charm embodies the echoes of that <br>ancient craftmanship.<br><br>Hold ATTACK to concentrate and swing the <br>nail in a frenzy. Gradually increases the <br>bearer's rate of attack as they land nail strikes <br>in quick succession.",ShopDesc = "I see you wield a nail,and this charm looks to be made out of nails.\nIt will be yours... for a price.", Icon = SPRITES["Mark_of_Purity"], NotchCost = CharmCosts[0] });
-            Charms.Add(new CharmDefinition { InternalName = "VesselsLament", DisplayName = "Vessel's Lament", Description = "Contains the hardships and grievances forced<br>upon the chained Vessel. Energy desperately <br>seeps out from within the constraints.<br><br>Focus to twist the SOUL of enemies marked<br>by the nail and unleash devastating blasts of <br>energy upon them.", ShopDesc = "I heard this charm is very good,but never risked to try myself.\nPay up,and you can find out if what they say is true.",Icon = SPRITES["Vessels_Lament"], NotchCost = CharmCosts[1] });
-            Charms.Add(new CharmDefinition { InternalName = "BoonOfHallownest", DisplayName = "Boon of Hallownest", Description = "The Pale Wyrm's beacon shines brighty <br>through this Charm. The blessing bestowed<br>pon the land known as Hallownest was able<br>to elevate the lesser bugs that resided in the domain.<br><br>Transforms all spells to take on a purified form.",ShopDesc = "Found this lying around in fungal.I get shivers just by looking at it,and it looks very important.\n\nDo you want it?", Icon = SPRITES["Boon_of_Hallownest"], NotchCost = CharmCosts[2] });
-            Charms.Add(new CharmDefinition { InternalName = "AbyssalBloom", DisplayName = "Abyssal Bloom", Description = "A dark blossom that was cursed to restrain an<br> uncontrollable power. Even though the <br>arkness within may be repressed, it writhes<br>in a volatile manner threatening to break <br>free.<br><br>The bearer gains overwhelming power as <br>they draw nearer to death.", ShopDesc = "I bought this from some wierd-looking bug for a handful of geo.\n\nI'll sell it to you if you pay enough.",Icon = SPRITES["Abyssal_Bloom"], NotchCost = CharmCosts[3] });
+            Charms.Add(new CharmDefinition {                 InternalName = "MarkOfPurity", DisplayName = () => LangStrings.Get("CHARM_NAME_PURITY", "UI"), Description = () => LangStrings.Get("CHARM_DESC_PURITY", "UI"),
+                ShopDesc = () => LangStrings.Get("CHARM_NAME_PURITY", "UI"), Icon = SPRITES["Mark_of_Purity"], NotchCost = CharmCosts[0]});
+            Charms.Add(new CharmDefinition {  InternalName = "VesselsLament", DisplayName = () => LangStrings.Get("CHARM_NAME_LAMENT", "UI"), Description = () => LangStrings.Get("CHARM_DESC_LAMENT", "UI"),
+                ShopDesc = () => LangStrings.Get("CHARM_NAME_LAMENT", "UI"), Icon = SPRITES["Vessels_Lament"], NotchCost = CharmCosts[1] });
+            Charms.Add(new CharmDefinition {   InternalName = "BoonOfHallownest", DisplayName = () => LangStrings.Get("CHARM_NAME_BOON", "UI"), Description = () => LangStrings.Get("CHARM_DESC_BOON", "UI"),
+                ShopDesc = () => LangStrings.Get("CHARM_NAME_BOON", "UI"), Icon = SPRITES["Boon_of_Hallownest"], NotchCost = CharmCosts[2]});
+            Charms.Add(new CharmDefinition { InternalName = "AbyssalBloom", DisplayName = () => LangStrings.Get("CHARM_NAME_BLOOM", "UI"), Description = () => LangStrings.Get("CHARM_DESC_BLOOM", "UI"),
+                ShopDesc = () => LangStrings.Get("CHARM_NAME_BLOOM", "UI"), Icon = SPRITES["Abyssal_Bloom"], NotchCost = CharmCosts[3] });
 
             CharmIDs = SFCore.CharmHelper.AddSprites(
                 SPRITES["Mark_of_Purity"],
@@ -374,43 +379,46 @@ public static bool IsRandoSave()
             return orig;
         }
 
-        private string LangGet(string key, string sheet, string orig)
+private string LangGet(string key, string sheet, string orig)
+{
+    if (sheet == "RANDO" && key.StartsWith("SHOP_DESCRIPTION_") && LangStrings.ContainsKey(key, sheet))
+        return LangStrings.Get(key, sheet);
+
+
+    if (sheet == "UI")
+    {
+        if (key == "CHARM_NAME_10")
+            return localSettings.upgradedCharm_10
+                ? LangStrings.Get("CHARM_NAME_HONOUR", "UI")  
+                : orig;
+
+        if (key == "CHARM_DESC_10")
+            return localSettings.upgradedCharm_10
+                ? LangStrings.Get("CHARM_DESC_HONOUR", "UI")
+                : orig;
+    }
+
+    if (LangStrings.ContainsKey(key, sheet))
+        return LangStrings.Get(key, sheet);
+
+    if ((sheet == "UI" && (key.StartsWith("CHARM_NAME_") || key.StartsWith("CHARM_DESC_"))) )
+    {
+        var parts = key.Split('_');
+        if (parts.Length == 3 && int.TryParse(parts[2], out int id))
         {
-
-            if (sheet == "UI" && key == "CHARM_NAME_10")
+            int idx = CharmIDs.IndexOf(id);
+            if (idx >= 0)
             {
-
-                return localSettings.upgradedCharm_10
-                    ? "King’s Honour"
-                    : orig;
+                return key.StartsWith("CHARM_NAME_")
+                    ? Charms[idx].DisplayName()
+                    : Charms[idx].Description();
             }
-            if (sheet == "UI" && key == "CHARM_DESC_10")
-            {
-                return localSettings.upgradedCharm_10
-                    ? "Unique charm bestowed by the king to his<br>most loyal Knight. Refurbished and restored<br>to its original state.<br><br>Surrounds its bearer in a royal and heroic aura."
-                    : orig;
-            }
-
-
-            if (key.StartsWith("CHARM_NAME_") || key.StartsWith("CHARM_DESC_"))
-            {
-
-                var parts = key.Split('_');
-                if (parts.Length == 3 && int.TryParse(parts[2], out int id))
-                {
-                    int idx = CharmIDs.IndexOf(id);
-                    if (idx >= 0)
-                    {
-                        if (key.StartsWith("CHARM_NAME_"))
-                            return Charms[idx].DisplayName;
-                        else
-                            return Charms[idx].Description;
-                    }
-                }
-            }
-
-            return orig;
         }
+    }
+
+    return orig;
+}
+
 
 
         private static void ToggleAllCharms(bool give)
@@ -472,9 +480,9 @@ public static bool IsRandoSave()
     {
         public string InternalName;
         public int NotchCost;
-        public string DisplayName;
-        public string Description;
-        public string ShopDesc; 
+           public Func<string> DisplayName;
+        public Func<string> Description;
+        public Func<string> ShopDesc;
         public Sprite Icon;
     }
   public class GlobalSettings {
