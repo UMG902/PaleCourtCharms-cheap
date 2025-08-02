@@ -90,7 +90,7 @@ namespace PaleCourtCharms
                 UIDef    = new MsgUIDef
                 {
                     name     = new LanguageString("UI", $"CHARM_NAME_{id}"),
-                    shopDesc = new BoxedString(PaleCourtCharms.Charms[i].ShopDesc),
+                     shopDesc = new LanguageString("RANDO", $"SHOP_DESCRIPTION_{PaleCourtCharms.Charms[i].InternalName}"),
                     sprite   = new EmbeddedSprite { key = key }
                 }
             };
@@ -159,4 +159,5 @@ namespace PaleCourtCharms
         public ISprite Clone() => (ISprite)MemberwiseClone();
     }
     }
+}
 }
