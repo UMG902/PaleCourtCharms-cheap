@@ -3,7 +3,7 @@ using SFCore.Utils;
 
 namespace PaleCourtCharms
 {
-    // Copied from ModCommon so I don't have to rebuild it again
+    // Copied from ModCommon so it doesn't have to be rebuilt again 
     // https://github.com/Kerr1291/ModCommon/blob/master/ModCommon/Extensions/GameObjectExtensions.cs
     public static class GameObjectExtensions
     {
@@ -48,4 +48,5 @@ namespace PaleCourtCharms
         }
 
     }
+
 }
