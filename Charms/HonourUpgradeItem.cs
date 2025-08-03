@@ -12,19 +12,24 @@ namespace PaleCourtCharms
    
     private const string HonourKey = "Kings_Honour";
 
-    public HonourUpgradeItem()
+  public HonourUpgradeItem()
+{
+    name = HonourKey;
+
+
+    string honourName    = PaleCourtCharms.LangStrings.Get("CHARM_NAME_HONOUR","UI");
+  
+    string honourShopDesc = PaleCourtCharms.LangStrings.Get("SHOP_DESCRIPTION_HONOUR", "RANDO");
+//this nonsense is needed so it just says "king's honour" in the shop and doesn't add a fake [-9999] cost
+//apparently keeps the language you had on at the time of creating the save
+            UIDef = new MsgUIDef
     {
-        name = HonourKey;
-        UIDef = new MsgUIDef
-        {
-            name     = new BoxedString("King’s Honour"),
-            shopDesc = new BoxedString("Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."),
-            sprite = new ICShiny.EmbeddedSprite { key = HonourKey }
+        name     = new BoxedString(honourName),
+        shopDesc = new BoxedString(honourShopDesc),
+        sprite   = new ICShiny.EmbeddedSprite { key = HonourKey }
+    };
+}
 
-        };
-
-
-    }
 
         public override void GiveImmediate(GiveInfo info)
         {
@@ -44,3 +49,4 @@ namespace PaleCourtCharms
 }
 
 }
+
