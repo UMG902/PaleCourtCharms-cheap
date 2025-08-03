@@ -1,5 +1,6 @@
 {
-  "DE": {"UI": {
+  "DE": {
+"UI": {
       "CHARM_NAME_PURITY": "Zeichen der Reinheit",
       "CHARM_DESC_PURITY": "Dem Gefäss wurde ein reiner Nagel geschenkt, der durch geheimnisvolle Mittel als Spiegelbild seiner selbst geschmiedet wurde. Dieser Talisman verkörpert die Echos dieser antiken Handwerkskunst.<br><br>Halte ANGREIFEN, um dich zu konzentrieren und den Nagel rasend schnell zu schwingen. Erhöht allmählich die Angriffsgeschwindigkeit des Trägers, während dieser in schneller Folge Nagelschläge landet.",
       "CHARM_NAME_LAMENT": "Klage des Gefässes",
@@ -297,3 +298,4 @@
     }
   }
 }
+
