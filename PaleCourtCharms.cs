@@ -24,7 +24,7 @@ namespace PaleCourtCharms
     IGlobalSettings<GlobalSettings>
     {
         public static PaleCourtCharms Instance;
-public static LanguageStrings LangStrings;
+        public static LanguageStrings LangStrings;
         public static readonly List<CharmDefinition> Charms = new();
         public static readonly string[] CharmKeys = { "Mark_of_Purity", "Vessels_Lament", "Boon_of_Hallownest", "Abyssal_Bloom" };
         public static readonly int[] CharmCosts = { 3, 2, 4, 5 };
@@ -88,11 +88,11 @@ public void OnLoadLocal(SaveModSettings s)
 
             Instance = this;
             Log("PaleCourtCharms initialized.");
-        LangStrings = new LanguageStrings(Assembly.GetExecutingAssembly(), "PaleCourtCharms.assets.Language.json");
+           LangStrings = new LanguageStrings(Assembly.GetExecutingAssembly(), "PaleCourtCharms.assets.Language.json");
 
             LoadEmbeddedSprites();
 
-            Charms.Add(new CharmDefinition {                 InternalName = "MarkOfPurity", DisplayName = () => LangStrings.Get("CHARM_NAME_PURITY", "UI"), Description = () => LangStrings.Get("CHARM_DESC_PURITY", "UI"),
+            Charms.Add(new CharmDefinition { InternalName = "MarkOfPurity", DisplayName = () => LangStrings.Get("CHARM_NAME_PURITY", "UI"), Description = () => LangStrings.Get("CHARM_DESC_PURITY", "UI"),
                 ShopDesc = () => LangStrings.Get("CHARM_NAME_PURITY", "UI"), Icon = SPRITES["Mark_of_Purity"], NotchCost = CharmCosts[0]});
             Charms.Add(new CharmDefinition {  InternalName = "VesselsLament", DisplayName = () => LangStrings.Get("CHARM_NAME_LAMENT", "UI"), Description = () => LangStrings.Get("CHARM_DESC_LAMENT", "UI"),
                 ShopDesc = () => LangStrings.Get("CHARM_NAME_LAMENT", "UI"), Icon = SPRITES["Vessels_Lament"], NotchCost = CharmCosts[1] });
