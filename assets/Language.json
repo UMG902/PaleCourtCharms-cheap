@@ -1,5 +1,36 @@
 {
-  "DE": {},
+  "DE": {"UI": {
+      "CHARM_NAME_PURITY": "Zeichen der Reinheit",
+      "CHARM_DESC_PURITY": "Dem Gefäss wurde ein reiner Nagel geschenkt, der durch geheimnisvolle Mittel als Spiegelbild seiner selbst geschmiedet wurde. Dieser Talisman verkörpert die Echos dieser antiken Handwerkskunst.<br><br>Halte ANGREIFEN, um dich zu konzentrieren und den Nagel rasend schnell zu schwingen. Erhöht allmählich die Angriffsgeschwindigkeit des Trägers, während dieser in schneller Folge Nagelschläge landet.",
+      "CHARM_NAME_LAMENT": "Klage des Gefässes",
+      "CHARM_DESC_LAMENT": "Birgt die Entbehrungen und Zwänge, die dem gefesselten Gefäss auferlegt wurden. Energie entweicht verzweifelt aus dem Inneren.<br><br>Fokussiere SEELE, um die SEELE von mit dem Nagel markierten Gegnern zu beeinflussen und entfessele verheerende Energieexplosion.",
+      "CHARM_NAME_BOON": "Segen von Heilandsnest",
+      "CHARM_DESC_BOON": "Das Leuchtfeuer des Bleichen Wyrm strahlt hell durch diesen Talisman. Der Segen, der dem Land namens Heilandsnest geschenkt wurde, vermochte die niederen Käfer dieser Gegend zu erheben.<br><br>Verwandelt alle Zauber in eine reine Form.",
+      "CHARM_NAME_BLOOM": "Blüte des Abgrunds",
+      "CHARM_DESC_BLOOM": "Eine finstere Blüte, verflucht, eine unbeherrschbare Kraft zu bändigen. Obwohl die Dunkelheit im Inneren unterdrückt ist, windet sie sich unberechenbar und droht, sich zu befreien.<br><br>Der Träger erlangt überwältigende Kraft, während er dem Tod näher kommt.",
+      "CHARM_NAME_HONOUR": "Königliche Ehre",
+      "CHARM_DESC_HONOUR": "Einzigartiger Talisman, den der König seinem treuesten Ritter verliehen hat. Erneuert und in seinen einstigen Glanz zurückversetzt.<br><br>Umgibt den Träger mit einer königlichen und heroischen Aura."
+    },
+    "Prompts": {
+      "CHARM_NAME_PURITY": "Zeichen der Reinheit",
+      "CHARM_DESC_PURITY": "Dem Gefäss wurde ein reiner Nagel geschenkt, der durch geheimnisvolle Mittel als Spiegelbild seiner selbst geschmiedet wurde. Dieser Talisman verkörpert die Echos dieser antiken Handwerkskunst.<br><br>Halte ANGREIFEN, um dich zu konzentrieren und den Nagel rasend schnell zu schwingen. Erhöht allmählich die Angriffsgeschwindigkeit des Trägers, während dieser in schneller Folge Nagelschläge landet.",
+      "CHARM_NAME_LAMENT": "Klage des Gefässes",
+      "CHARM_DESC_LAMENT": "Birgt die Entbehrungen und Zwänge, die dem gefesselten Gefäss auferlegt wurden. Energie entweicht verzweifelt aus dem Inneren.<br><br>Fokussiere SEELE, um die SEELE von mit dem Nagel markierten Gegnern zu beeinflussen und entfessele verheerende Explosionen von Energie.",
+      "CHARM_NAME_BOON": "Segen von Heilandsnest",
+      "CHARM_DESC_BOON": "Das Leuchtfeuer des Bleichen Wyrm strahlt hell durch diesen Talisman. Der Segen, der dem Land namens Heilandsnest geschenkt wurde, vermochte die niederen Käfer dieser Gegend zu erheben.<br><br>Verwandelt alle Zauber in eine reine Form.",
+      "CHARM_NAME_BLOOM": "Blüte des Abgrunds",
+      "CHARM_DESC_BLOOM": "Eine finstere Blüte, verflucht, eine unbeherrschbare Kraft zu bändigen. Obwohl die Dunkelheit im Inneren unterdrückt ist, windet sie sich unberechenbar und droht, sich zu befreien.<br><br>Der Träger erlangt überwältigende Kraft, während er dem Tod näher kommt.",
+      "CHARM_NAME_HONOUR": "Königliche Ehre",
+      "CHARM_DESC_HONOUR": "Einzigartiger Talisman, den der König seinem treuesten Ritter verliehen hat. Erneuert und in seinen einstigen Glanz zurückversetzt.<br><br>Umgibt den Träger mit einer königlichen und heroischen Aura.",
+      "CUSTOM_ITEM_INTROS": "Erhalten"
+    },
+    "RANDO": {
+      "SHOP_DESCRIPTION_MarkOfPurity": "Ich sehe, du führst einen Nagel mit dir, und dieser Talisman scheint aus Nägeln gemacht zu sein.<br>Er gehört dir... für einen Preis.",
+      "SHOP_DESCRIPTION_VesselsLament": "Ich hab gehört, dieser Talisman soll sehr gut sein. Ihn selbst auszuprobieren hab ich mich aber nie getraut.<br>Zahl was, und du findest heraus, ob die Gerüchte stimmen.",
+      "SHOP_DESCRIPTION_BoonOfHallownest": "Hab das in der Pilzöde herumliegen sehen. Ich bekomme schon beim bloßen Anblick Gänsehaut. Irgendwie sieht es sehr wichtig aus.<br><br>Magst du es haben?",
+      "SHOP_DESCRIPTION_AbyssalBloom": "Ich hab das von einem seltsam aussehenden Käfer für eine Handvoll Geo gekauft.<br><br>Ich verkauf's dir, wenn der Preis stimmt.",
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim hat mir das hier hinterlassen. Ich glaube, du kannst es besser gebrauchen als ich.<br><br>Verwandelt Wappen des Verteidigers in Königliche Ehre"
+    }},
   "EN": {
     "UI": {
       "CHARM_NAME_PURITY": "Mark of Purity",
@@ -31,7 +62,7 @@
       "SHOP_DESCRIPTION_VesselsLament": "I heard this charm is very good, but never risked to try myself.<br>Pay up, and you can find out if what they say is true.",
       "SHOP_DESCRIPTION_BoonOfHallownest": "Found this lying around in fungal. I get shivers just by looking at it, and it looks very important.<br><br>Do you want it?",
       "SHOP_DESCRIPTION_AbyssalBloom": "I bought this from some wierd-looking bug for a handful of geo.<br><br>I'll sell it to you if you pay enough.",
-      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.<br><br>Upgrades Defender’s Crest into King’s Honour."
     }
   },
   "ES": {
@@ -130,7 +161,7 @@
       "SHOP_DESCRIPTION_VesselsLament": "Ho sentito dire che questo amuleto è molto potente, ma non ho mai avuto il coraggio di provarlo.<br>Dammi del denaro e potrai scoprire tu stesso se ciò che dicono è vero.",
       "SHOP_DESCRIPTION_BoonOfHallownest": "Ho trovato questo nei pressi delle Caverne Fungine. mi vengono i brividi solo a guardarlo, e sembra molto potente. <br><br>Lo vuoi?",
       "SHOP_DESCRIPTION_AbyssalBloom": "Ho comprato questo da un insetto bizzarro per una manciata di Geo <br><br>Posso vendertelo se mi paghi abbastanza.",
-      "SHOP_DESCRIPTION_HONOUR": "Ogrim mi ha lasciato questo, penso che tu ne abbia bisogno di più.\n\nPotenzia Stemma del difensore trasformandolo in Onore del re."
+      "SHOP_DESCRIPTION_HONOUR": "Ogrim mi ha lasciato questo, penso che tu ne abbia bisogno di più.<br><br>Potenzia Stemma del difensore trasformandolo in Onore del re."
     }
   },
   "JA": {
@@ -265,5 +296,4 @@
       "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
     }
   }
-
-} 
+}
