@@ -12,3 +12,5 @@ Hope you have fun!
 
 
 Special thanks to Hollow Knight Modding Discord and the Pale Court team for helping me with code and allowing me to do this.
+
+Also shoutouts to tranlsators: nonsenf for full german translation,and my gf for additional rando translation.
