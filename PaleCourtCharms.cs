@@ -76,7 +76,7 @@ public void OnLoadLocal(SaveModSettings s)
 
         public static SaveModSettings Settings => Instance?.localSettings;
 
-        public override string GetVersion() => "1.0.1";
+        public override string GetVersion() => "1.1.1";
 
         public PaleCourtCharms() : base("PaleCourtCharms")
         {
@@ -274,11 +274,15 @@ private static void HandleNewGame(On.UIManager.orig_StartNewGame orig, UIManager
         }
 
         public void StartGame()
-        {
-            GameManager.instance.gameObject.AddComponent<Amulets>();
-           
+{
+    var gmObj = GameManager.instance.gameObject;
+   
+    if (gmObj.GetComponent<Amulets>() == null)
+    {
+        gmObj.AddComponent<Amulets>();
+    }
+}
 
-        }
 public static bool IsRandoSave()
 {
     
