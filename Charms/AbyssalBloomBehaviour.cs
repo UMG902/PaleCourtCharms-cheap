@@ -279,33 +279,33 @@ namespace PaleCourtCharms
             Mirror.SetField(_hc, "attack_time", 0f);
         }
 
-private IEnumerator TendrilAttack()
-{
-    _hc.cState.attacking = true;
+        private IEnumerator TendrilAttack()
+        {
+            _hc.cState.attacking = true;
 
-    MeshRenderer mr = _hc.GetComponent<MeshRenderer>();
-    if (!playingAudio) StartCoroutine(PlayAudio());
+            MeshRenderer mr = _hc.GetComponent<MeshRenderer>();
+            if (!playingAudio) StartCoroutine(PlayAudio());
 
-    mr.enabled = false;
-    _knightBall.SetActive(true);
+            mr.enabled = false;
+            _knightBall.SetActive(true);
 
-   
-    Destroy(_sideSlash);
 
-    _sideSlash = new GameObject("Shade Slash");
-    _sideSlash.transform.parent = _knightBall.transform;
-    _sideSlash.layer = (int)PhysLayers.HERO_ATTACK;
-    _sideSlash.tag = "Nail Attack";
-    _sideSlash.transform.localPosition = Vector3.zero;
-    _sideSlash.transform.localScale = Vector3.one;
-    _sideSlash.SetActive(false); 
+            Destroy(_sideSlash);
 
-    AddDamageEnemiesFsm(_sideSlash, AttackDirection.normal);
+            _sideSlash = new GameObject("Shade Slash");
+            _sideSlash.transform.parent = _knightBall.transform;
+            _sideSlash.layer = (int)PhysLayers.HERO_ATTACK;
+            _sideSlash.tag = "Nail Attack";
+            _sideSlash.transform.localPosition = Vector3.zero;
+            _sideSlash.transform.localScale = Vector3.one;
+            _sideSlash.SetActive(false);
 
-  
-    PolygonCollider2D slashPoly = _sideSlash.AddComponent<PolygonCollider2D>();
-    slashPoly.points = new[]
-    {
+            AddDamageEnemiesFsm(_sideSlash, AttackDirection.normal);
+
+
+            PolygonCollider2D slashPoly = _sideSlash.AddComponent<PolygonCollider2D>();
+            slashPoly.points = new[]
+            {
         new Vector2(0.0f, -2.0f),
         new Vector2(3.5f, -2.0f),
         new Vector2(3.5f, 0.0f),
@@ -313,38 +313,38 @@ private IEnumerator TendrilAttack()
         new Vector2(0.0f, 2.0f),
         new Vector2(-3f, 0.0f) // covers player body
     };
-    slashPoly.offset = Vector2.zero;
-    slashPoly.isTrigger = true;
-
-  
-    var kb = _sideSlash.AddComponent<ShadeSlashKnockback>();
-    kb.heroCtrl = _hc;
-
- 
-    GameObject parrySlash = Instantiate(_sideSlash, _sideSlash.transform);
-    parrySlash.LocateMyFSM("damages_enemy").GetFsmIntVariable("damageDealt").Value = 0;
-    parrySlash.layer = (int)PhysLayers.ITEM;
+            slashPoly.offset = Vector2.zero;
+            slashPoly.isTrigger = true;
 
 
-    ShadeSlash ss = _sideSlash.AddComponent<ShadeSlash>();
-    ss.attackDirection = AttackDirection.normal;
+            var kb = _sideSlash.AddComponent<ShadeSlashKnockback>();
+            kb.heroCtrl = _hc;
 
 
-    _sideSlash.SetActive(true);
-    parrySlash.SetActive(true);
+            GameObject parrySlash = Instantiate(_sideSlash, _sideSlash.transform);
+            parrySlash.LocateMyFSM("damages_enemy").GetFsmIntVariable("damageDealt").Value = 0;
+            parrySlash.layer = (int)PhysLayers.ITEM;
 
-    
-    _knightBallAnim.PlayFromFrame("Slash" + _shadeSlashNum + " Antic", 2);
-    yield return new WaitWhile(() => _knightBallAnim.IsPlaying("Slash" + _shadeSlashNum + " Antic"));
-    yield return new WaitForSeconds(_knightBallAnim.PlayAnimGetTime("Slash" + _shadeSlashNum) - (1f / 24f));
 
-   
-    Destroy(_sideSlash);
-    mr.enabled = true;
-    _knightBall.SetActive(false);
-    _shadeSlashNum = _shadeSlashNum == 1 ? 2 : 1;
-    _hc.cState.attacking = false;
-}
+            ShadeSlash ss = _sideSlash.AddComponent<ShadeSlash>();
+            ss.attackDirection = AttackDirection.normal;
+
+
+            _sideSlash.SetActive(true);
+            parrySlash.SetActive(true);
+
+
+            _knightBallAnim.PlayFromFrame("Slash" + _shadeSlashNum + " Antic", 2);
+            yield return new WaitWhile(() => _knightBallAnim.IsPlaying("Slash" + _shadeSlashNum + " Antic"));
+            yield return new WaitForSeconds(_knightBallAnim.PlayAnimGetTime("Slash" + _shadeSlashNum) - (1f / 24f));
+
+
+            Destroy(_sideSlash);
+            mr.enabled = true;
+            _knightBall.SetActive(false);
+            _shadeSlashNum = _shadeSlashNum == 1 ? 2 : 1;
+            _hc.cState.attacking = false;
+        }
 
 
         private IEnumerator VerticalTendrilAttack(bool up)
