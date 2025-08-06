@@ -61,7 +61,7 @@ namespace PaleCourtCharms
             _modifyProps = GetComponent<ModifyBloomProps>();
 
             PlayMakerFSM _radControl = Instantiate(PaleCourtCharms.preloadedGO["Radiance"].LocateMyFSM("Control"), _hc.transform);
-           PaleCourtCharms.Clips["Shade Slash"] = (AudioClip)_radControl.GetAction<AudioPlayerOneShotSingle>("Antic", 1).audioClip.Value;
+            PaleCourtCharms.Clips["Shade Slash"] = (AudioClip)_radControl.GetAction<AudioPlayerOneShotSingle>("Antic", 1).audioClip.Value;
 
 
             On.HealthManager.Hit += HealthManagerHit;
@@ -88,7 +88,7 @@ namespace PaleCourtCharms
         public void SetLevel(int level)
         {
             _level = level;
-            switch(_level)
+            switch (_level)
             {
                 case 0:
                     ModifySlashColors(false);
@@ -109,14 +109,14 @@ namespace PaleCourtCharms
 
         private void ModifySlashColors(bool modify)
         {
-            foreach(NailSlash nailSlash in _nailSlashes)
+            foreach (NailSlash nailSlash in _nailSlashes)
             {
                 nailSlash.SetFury(modify);
             }
 
             Color color = modify ? Color.black : Color.white;
 
-            foreach(GameObject slash in new GameObject[]
+            foreach (GameObject slash in new GameObject[]
             {
                 _hc.slashPrefab,
                 _hc.slashAltPrefab,
@@ -130,21 +130,21 @@ namespace PaleCourtCharms
 
             GameObject attacks = HeroController.instance.gameObject.FindGameObjectInChildren("Attacks");
 
-            foreach(string child in new[] { "Cyclone Slash", "Dash Slash", "Great Slash" })
+            foreach (string child in new[] { "Cyclone Slash", "Dash Slash", "Great Slash" })
             {
                 attacks.FindGameObjectInChildren(child).GetComponent<tk2dSprite>().color = color;
-                foreach(var item in attacks.FindGameObjectInChildren(child).GetComponentsInChildren<tk2dSprite>())
+                foreach (var item in attacks.FindGameObjectInChildren(child).GetComponentsInChildren<tk2dSprite>())
                     item.color = color;
             }
         }
 
         private void HealthManagerHit(On.HealthManager.orig_Hit orig, HealthManager self, HitInstance hitInstance)
         {
-            if(hitInstance.AttackType is AttackTypes.Nail or AttackTypes.NailBeam)
+            if (hitInstance.AttackType is AttackTypes.Nail or AttackTypes.NailBeam)
             {
                 hitInstance.Multiplier += damageBuff + (_fury ? 0.75f : 0f);
             }
-            if(hitInstance.AttackType == AttackTypes.SharpShadow)
+            if (hitInstance.AttackType == AttackTypes.SharpShadow)
             {
                 hitInstance.Multiplier += 2f * damageBuff;
             }
@@ -154,7 +154,7 @@ namespace PaleCourtCharms
 
         private void HeroControllerCancelDownAttack(On.HeroController.orig_CancelDownAttack orig, HeroController self)
         {
-            if(_vertSlashCoro != null)
+            if (_vertSlashCoro != null)
             {
                 CancelVerticalTendrilAttack();
             }
@@ -163,7 +163,7 @@ namespace PaleCourtCharms
 
         private void HeroControllerCancelAttack(On.HeroController.orig_CancelAttack orig, HeroController self)
         {
-            if(_sideSlashCoro != null)
+            if (_sideSlashCoro != null)
             {
                 CancelTendrilAttack();
             }
@@ -172,7 +172,7 @@ namespace PaleCourtCharms
 
         private void Tk2dSpriteAnimatorPlay(On.tk2dSpriteAnimator.orig_Play_string orig, tk2dSpriteAnimator self, string name)
         {
-            if(self.gameObject == _hc.gameObject && name == "Idle Hurt")
+            if (self.gameObject == _hc.gameObject && name == "Idle Hurt")
             {
                 self.Play("Idle");
                 return;
@@ -189,7 +189,7 @@ namespace PaleCourtCharms
         private void KnightHatchlingOnEnable(On.KnightHatchling.orig_OnEnable orig, KnightHatchling self)
         {
             orig(self);
-            if(_level == 2)
+            if (_level == 2)
             {
                 KnightHatchling.TypeDetails details = Mirror.GetField<KnightHatchling, KnightHatchling.TypeDetails>(self, "details");
                 Mirror.SetField(self, "details", details with { damage = details.damage * 2 });
@@ -198,14 +198,14 @@ namespace PaleCourtCharms
 
         private void DoVoidAttack(On.HeroController.orig_Attack origAttack, HeroController hc, AttackDirection dir)
         {
-            if(_level != 2)
+            if (_level != 2)
             {
                 origAttack(hc, dir);
                 return;
             }
 
             InputHandler ih = InputHandler.Instance;
-            if(_pd.GetBool(nameof(PlayerData.equippedCharm_32)))
+            if (_pd.GetBool(nameof(PlayerData.equippedCharm_32)))
             {
                 Mirror.SetField(_hc, "attackDuration", _hc.ATTACK_DURATION_CH);
                 Mirror.SetField(_hc, "attack_cooldown", _hc.ATTACK_COOLDOWN_TIME_CH);
@@ -217,24 +217,24 @@ namespace PaleCourtCharms
             }
             _hc.cState.recoiling = false;
 
-            if(hc.cState.wallSliding)
+            if (hc.cState.wallSliding)
             {
-                if(_hc.cState.attacking) CancelWallTendrilAttack();
+                if (_hc.cState.attacking) CancelWallTendrilAttack();
                 _wallSlashCoro = StartCoroutine(WallTendrilAttack());
             }
-            else if(ih.ActionButtonToPlayerAction(HeroActionButton.DOWN) && !hc.CheckTouchingGround())
+            else if (ih.ActionButtonToPlayerAction(HeroActionButton.DOWN) && !hc.CheckTouchingGround())
             {
-                if(_hc.cState.attacking) CancelVerticalTendrilAttack();
+                if (_hc.cState.attacking) CancelVerticalTendrilAttack();
                 _vertSlashCoro = StartCoroutine(VerticalTendrilAttack(false));
             }
-            else if(ih.ActionButtonToPlayerAction(HeroActionButton.UP))
+            else if (ih.ActionButtonToPlayerAction(HeroActionButton.UP))
             {
-                if(_hc.cState.attacking) CancelVerticalTendrilAttack();
+                if (_hc.cState.attacking) CancelVerticalTendrilAttack();
                 _vertSlashCoro = StartCoroutine(VerticalTendrilAttack(true));
             }
             else
             {
-                if(_hc.cState.attacking)
+                if (_hc.cState.attacking)
                 {
                     CancelTendrilAttack();
                     _shadeSlashNum = _shadeSlashNum == 1 ? 2 : 1;
@@ -245,8 +245,8 @@ namespace PaleCourtCharms
 
         public void CancelTendrilAttack()
         {
-           
-            if(_sideSlashCoro != null) StopCoroutine(_sideSlashCoro);
+
+            if (_sideSlashCoro != null) StopCoroutine(_sideSlashCoro);
             Destroy(_sideSlash);
             _knightBall.SetActive(false);
             _hc.GetComponent<MeshRenderer>().enabled = true;
@@ -255,8 +255,8 @@ namespace PaleCourtCharms
 
         public void CancelVerticalTendrilAttack()
         {
-            
-            if(_vertSlashCoro != null) StopCoroutine(_vertSlashCoro);
+
+            if (_vertSlashCoro != null) StopCoroutine(_vertSlashCoro);
             Destroy(_shadeSlashContainer);
             _hc.StartAnimationControl();
             ResetTendrilAttack();
@@ -264,8 +264,8 @@ namespace PaleCourtCharms
 
         public void CancelWallTendrilAttack()
         {
-           
-            if(_wallSlashCoro != null) StopCoroutine(_wallSlashCoro);
+
+            if (_wallSlashCoro != null) StopCoroutine(_wallSlashCoro);
             Destroy(_wallSlash);
             _hc.StartAnimationControl();
             ResetTendrilAttack();
@@ -279,76 +279,84 @@ namespace PaleCourtCharms
             Mirror.SetField(_hc, "attack_time", 0f);
         }
 
-        private IEnumerator TendrilAttack()
-        {
-            _hc.cState.attacking = true;
+private IEnumerator TendrilAttack()
+{
+    _hc.cState.attacking = true;
 
-            MeshRenderer mr = _hc.GetComponent<MeshRenderer>();
-            if(!playingAudio) StartCoroutine(PlayAudio());
+    MeshRenderer mr = _hc.GetComponent<MeshRenderer>();
+    if (!playingAudio) StartCoroutine(PlayAudio());
 
-            mr.enabled = false;
-            _knightBall.SetActive(true);
+    mr.enabled = false;
+    _knightBall.SetActive(true);
 
-            Destroy(_sideSlash);
-            _sideSlash = new GameObject("Shade Slash");
-            _sideSlash.transform.parent = _knightBall.transform;
-            _sideSlash.layer = (int)PhysLayers.HERO_ATTACK;
-            _sideSlash.tag = "Nail Attack";
-            _sideSlash.transform.localPosition = Vector3.zero;
-            _sideSlash.transform.localScale = Vector3.one;
-            _sideSlash.SetActive(false);
+   
+    Destroy(_sideSlash);
 
-            AddDamageEnemiesFsm(_sideSlash, AttackDirection.normal);
+    _sideSlash = new GameObject("Shade Slash");
+    _sideSlash.transform.parent = _knightBall.transform;
+    _sideSlash.layer = (int)PhysLayers.HERO_ATTACK;
+    _sideSlash.tag = "Nail Attack";
+    _sideSlash.transform.localPosition = Vector3.zero;
+    _sideSlash.transform.localScale = Vector3.one;
+    _sideSlash.SetActive(false); 
 
-            PolygonCollider2D slashPoly = _sideSlash.AddComponent<PolygonCollider2D>();
-            slashPoly.points = new[]
-            {
-                new Vector2(0.0f, -2.0f),
-                new Vector2(3.5f, -2.0f),
-                new Vector2(3.5f, 0.0f),
-                new Vector2(3.0f, 1.0f),
-                new Vector2(0.0f, 2.0f),
-                new Vector2(-3f, 0.0f), // to have parts of the player covered with a hitbox
-            };
+    AddDamageEnemiesFsm(_sideSlash, AttackDirection.normal);
 
-            slashPoly.offset = Vector2.zero;
-            slashPoly.isTrigger = true;
+  
+    PolygonCollider2D slashPoly = _sideSlash.AddComponent<PolygonCollider2D>();
+    slashPoly.points = new[]
+    {
+        new Vector2(0.0f, -2.0f),
+        new Vector2(3.5f, -2.0f),
+        new Vector2(3.5f, 0.0f),
+        new Vector2(3.0f, 1.0f),
+        new Vector2(0.0f, 2.0f),
+        new Vector2(-3f, 0.0f) // covers player body
+    };
+    slashPoly.offset = Vector2.zero;
+    slashPoly.isTrigger = true;
 
-            GameObject parrySlash = Instantiate(_sideSlash, _sideSlash.transform);
-            parrySlash.LocateMyFSM("damages_enemy").GetFsmIntVariable("damageDealt").Value = 0;
-            parrySlash.layer = (int)PhysLayers.ITEM;
+  
+    var kb = _sideSlash.AddComponent<ShadeSlashKnockback>();
+    kb.heroCtrl = _hc;
 
-            ShadeSlash ss = _sideSlash.AddComponent<ShadeSlash>();
-            ss.attackDirection = AttackDirection.normal;
+ 
+    GameObject parrySlash = Instantiate(_sideSlash, _sideSlash.transform);
+    parrySlash.LocateMyFSM("damages_enemy").GetFsmIntVariable("damageDealt").Value = 0;
+    parrySlash.layer = (int)PhysLayers.ITEM;
 
-            _sideSlash.SetActive(true);
-            parrySlash.SetActive(true);
 
-            _knightBallAnim.PlayFromFrame("Slash" + _shadeSlashNum + " Antic", 2);
-            yield return new WaitWhile(() => _knightBallAnim.IsPlaying("Slash" + _shadeSlashNum + " Antic"));
-            yield return new WaitForSeconds(_knightBallAnim.PlayAnimGetTime("Slash" + _shadeSlashNum) - (1f / 24f));
+    ShadeSlash ss = _sideSlash.AddComponent<ShadeSlash>();
+    ss.attackDirection = AttackDirection.normal;
 
-            Destroy(_sideSlash);
 
-            mr.enabled = true;
+    _sideSlash.SetActive(true);
+    parrySlash.SetActive(true);
 
-            _knightBall.SetActive(false);
+    
+    _knightBallAnim.PlayFromFrame("Slash" + _shadeSlashNum + " Antic", 2);
+    yield return new WaitWhile(() => _knightBallAnim.IsPlaying("Slash" + _shadeSlashNum + " Antic"));
+    yield return new WaitForSeconds(_knightBallAnim.PlayAnimGetTime("Slash" + _shadeSlashNum) - (1f / 24f));
 
-            // Used to keep track of reg slash/alt slash
-            _shadeSlashNum = _shadeSlashNum == 1 ? 2 : 1;
-            _hc.cState.attacking = false;
-        }
+   
+    Destroy(_sideSlash);
+    mr.enabled = true;
+    _knightBall.SetActive(false);
+    _shadeSlashNum = _shadeSlashNum == 1 ? 2 : 1;
+    _hc.cState.attacking = false;
+}
+
 
         private IEnumerator VerticalTendrilAttack(bool up)
         {
             _hc.cState.attacking = true;
-            if(up) _hc.cState.upAttacking = true;
+            if (up) _hc.cState.upAttacking = true;
             else _hc.cState.downAttacking = true;
 
             string animName = up ? "Up" : "Down";
 
             _hc.StopAnimationControl();
-            if(!playingAudio) StartCoroutine(PlayAudio());
+            if (!playingAudio) StartCoroutine(PlayAudio());
 
             _hcAnim.Play(animName + "Slash Void");
             tk2dSpriteAnimationClip hcSlashAnim = _hcAnim.GetClipByName(animName + "Slash Void");
@@ -371,7 +379,7 @@ namespace PaleCourtCharms
 
             // Create hitboxes
             PolygonCollider2D slashPoly = shadeSlash.AddComponent<PolygonCollider2D>();
-            if(up) slashPoly.points = new[]
+            if (up) slashPoly.points = new[]
             {
                 new Vector2(-1f, 0f),
                 new Vector2(-0.75f, 1.5f),
@@ -423,7 +431,7 @@ namespace PaleCourtCharms
             yield return new WaitWhile(() => _hcAnim.Playing && _hcAnim.IsPlaying(animName + "Slash Void"));
             _hc.StartAnimationControl();
             _hc.cState.attacking = false;
-            if(up) _hc.cState.upAttacking = false;
+            if (up) _hc.cState.upAttacking = false;
             else _hc.cState.downAttacking = false;
         }
 
@@ -433,7 +441,7 @@ namespace PaleCourtCharms
 
             _hc.StopAnimationControl();
 
-            if(!playingAudio) StartCoroutine(PlayAudio());
+            if (!playingAudio) StartCoroutine(PlayAudio());
 
             _hcAnim.Play(_hcAnim.GetClipByName("WallSlash Void"));
 
@@ -499,12 +507,12 @@ namespace PaleCourtCharms
         {
             PlayMakerFSM tempFsm = o.AddComponent<PlayMakerFSM>();
             PlayMakerFSM fsm = _hc.gameObject.Find("AltSlash").LocateMyFSM("damages_enemy");
-            foreach(var fi in typeof(PlayMakerFSM).GetFields(BindingFlags.Instance | BindingFlags.NonPublic |
+            foreach (var fi in typeof(PlayMakerFSM).GetFields(BindingFlags.Instance | BindingFlags.NonPublic |
                                                               BindingFlags.Public))
             {
                 fi.SetValue(tempFsm, fi.GetValue(fsm));
             }
-            switch(dir)
+            switch (dir)
             {
                 case AttackDirection.normal:
                     tempFsm.GetFsmFloatVariable("direction").Value = _hc.cState.facingRight ? 0f : 180f;
@@ -518,6 +526,67 @@ namespace PaleCourtCharms
             }
         }
 
-        
+
     }
+[RequireComponent(typeof(PolygonCollider2D))]
+public class ShadeSlashKnockback : MonoBehaviour
+{
+    public HeroController heroCtrl;
+    private bool _hasBounced;
+
+   
+    private const int WALL_LAYER = 8;
+    private const float MIN_PCT = 0.6f;     
+
+    private const float TIP_RIGHT =  3.5f;
+    private const float TIP_LEFT  = -3.0f;
+
+    private PolygonCollider2D _poly;
+
+    void Awake()
+    {
+        _poly = GetComponent<PolygonCollider2D>();
+        _poly.isTrigger = true;
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (_hasBounced || other.gameObject.layer != WALL_LAYER)
+            return;
+
+        // horizontal‐vertical guard to not bounce of floors or ceilings
+        Vector2 center   = transform.position;
+        Vector2 hitPoint = other.ClosestPoint(center);
+        Vector2 dc       = hitPoint - center;
+        if (Mathf.Abs(dc.x) <= Mathf.Abs(dc.y))
+            return;
+
+        bool goingRight = dc.x > 0f;
+        float fullReach = goingRight ? TIP_RIGHT : -TIP_LEFT;
+        Vector2 dir     = new Vector2(goingRight ? 1f : -1f, 0f);
+
+     
+        RaycastHit2D hit = Physics2D.Raycast(center, dir, fullReach + 0.001f, 1 << WALL_LAYER);
+        if (!hit.collider)
+            return;  
+
+     
+        float pen = fullReach - hit.distance;
+        if (pen <= 0f)
+            return;
+
+        if (pen < fullReach * MIN_PCT)
+            return;
+
+        if (goingRight) heroCtrl.RecoilLeft();
+        else            heroCtrl.RecoilRight();
+
+        if (heroCtrl.TryGetComponent<Rigidbody2D>(out var rb))
+            rb.velocity *= 0.5f;
+
+        _hasBounced = true;
+        Destroy(this);
+    }
+}
+
 }
