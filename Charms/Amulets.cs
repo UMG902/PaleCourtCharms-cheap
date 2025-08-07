@@ -28,15 +28,25 @@ namespace PaleCourtCharms
         private GameObject _audioPlayerActor;
 
         private bool _activated = false;
+        private bool initialized = false;
 
         public void Awake()
         {
-       
+        EnsureInitialized();
+         
+        }
+        
+        public void EnsureInitialized()
+        {
+            if (initialized) return;
+            initialized = true;
+
             On.HeroController.Start += On_HeroController_Start;
             On.CharmIconList.GetSprite += CharmIconList_GetSprite;
             ModHooks.CharmUpdateHook += CharmUpdate;
-        }
 
+            Modding.Logger.Log("[PaleCourtCharms] Amulets initialized.");
+        }
         private Sprite CharmIconList_GetSprite(On.CharmIconList.orig_GetSprite orig, CharmIconList self, int id)
         {
             if (PaleCourtCharms.Settings.upgradedCharm_10)
@@ -277,21 +287,7 @@ namespace PaleCourtCharms
             nailArts.GetAction<Tk2dPlayAnimationWithEvents>("Dash Slash Void").clipName = "NA Dash Slash Void";
             nailArts.GetAction<Tk2dPlayAnimationWithEvents>("G Slash Void").clipName = "NA Big Slash Void";
 
-            //// Insert testing methods for testing states
-            //nailArts.InsertMethod("Bloom Activated CSlash?", 0, () =>
-            //{
-            //    nailArts.SetState(PaleCourtCharms.Instance.SaveSettings.equippedCharms[3] && _pd.health <= 10 ? "Cyclone Start Void" : "Cyclone Start");
-            //});
-            //nailArts.InsertMethod("Bloom Activated DSlash?", 0, () =>
-            //{
-            //    nailArts.SetState(PaleCourtCharms.Instance.SaveSettings.equippedCharms[3] && _pd.health <= 10 ? "Dash Slash Void" : "Dash Slash");
-            //});
-            //nailArts.InsertMethod("Bloom Activated GSlash?", 0, () =>
-            //{
-            //    Log($"PureAmulets.Settings.equippedCharm_44: {PaleCourtCharms.Instance.SaveSettings.equippedCharms[3]}, health: {_pd.health <= 10}");
-            //    nailArts.SetState(PaleCourtCharms.Instance.SaveSettings.equippedCharms[3] && _pd.health <= 10 ? "G Slash Void" : "G Slash");
-            //});
-
+    
             // Insert activation and deactivation of void nail arts
             nailArts.InsertMethod("Activate Slash Void", 0, () =>
             {
@@ -552,6 +548,8 @@ namespace PaleCourtCharms
 
         private void OnDestroy()
         {
+            if (!initialized) return;
+            initialized = false;
             Log("Destroyed Amulets");
             On.HeroController.Start -= On_HeroController_Start;
             ModHooks.CharmUpdateHook -= CharmUpdate;
