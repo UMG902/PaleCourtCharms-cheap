@@ -17,6 +17,7 @@ using PaleCourtCharms.Rando;
 using System.Linq;
 using RandomizerMod.IC;
 using PaleCourtCharms.Interop;
+
 namespace PaleCourtCharms
 {
     public class PaleCourtCharms : Mod,
@@ -39,26 +40,28 @@ namespace PaleCourtCharms
 
         private SaveModSettings localSettings = new();
         public SaveModSettings OnSaveLocal()
-{
-   
-      if (ModHooks.GetMod("Randomizer 4") is Mod)
-    {
-        localSettings.notchCosts = PaleCourtCharms.CharmCostsByID
-            .OrderBy(kvp => Array.IndexOf(
-                PaleCourtCharms.CharmKeys,
-                PaleCourtCharms.CharmKeys[
-                    PaleCourtCharms.CharmIDs.IndexOf(kvp.Key)
-                ]))
-            .Select(kvp => kvp.Value)
-            .ToList();
-    }
+        {
 
-    return localSettings;
-}
+            if (ModHooks.GetMod("Randomizer 4") is Mod)
+            {
+                localSettings.notchCosts = PaleCourtCharms.CharmCostsByID
+                    .OrderBy(kvp => Array.IndexOf(
+                        PaleCourtCharms.CharmKeys,
+                        PaleCourtCharms.CharmKeys[
+                            PaleCourtCharms.CharmIDs.IndexOf(kvp.Key)
+                        ]))
+                    .Select(kvp => kvp.Value)
+                    .ToList();
+            }
 
-public void OnLoadLocal(SaveModSettings s)
-{
-    localSettings = s;
+            return localSettings;
+
+        }
+
+
+        public void OnLoadLocal(SaveModSettings s)
+        {
+            localSettings = s;
 
             if (ModHooks.GetMod("Randomizer 4") is Mod)
             {
@@ -72,11 +75,11 @@ public void OnLoadLocal(SaveModSettings s)
                     }
                 }
             }
-}
+        }
 
         public static SaveModSettings Settings => Instance?.localSettings;
 
-        public override string GetVersion() => "1.1.1";
+        public override string GetVersion() => "1.1.3";
 
         public PaleCourtCharms() : base("PaleCourtCharms")
         {
@@ -383,45 +386,45 @@ public static bool IsRandoSave()
             return orig;
         }
 
-private string LangGet(string key, string sheet, string orig)
-{
-    if (sheet == "RANDO" && key.StartsWith("SHOP_DESCRIPTION_") && LangStrings.ContainsKey(key, sheet))
-        return LangStrings.Get(key, sheet);
-
-
-    if (sheet == "UI")
-    {
-        if (key == "CHARM_NAME_10")
-            return localSettings.upgradedCharm_10
-                ? LangStrings.Get("CHARM_NAME_HONOUR", "UI")  
-                : orig;
-
-        if (key == "CHARM_DESC_10")
-            return localSettings.upgradedCharm_10
-                ? LangStrings.Get("CHARM_DESC_HONOUR", "UI")
-                : orig;
-    }
-
-    if (LangStrings.ContainsKey(key, sheet))
-        return LangStrings.Get(key, sheet);
-
-    if ((sheet == "UI" && (key.StartsWith("CHARM_NAME_") || key.StartsWith("CHARM_DESC_"))) )
-    {
-        var parts = key.Split('_');
-        if (parts.Length == 3 && int.TryParse(parts[2], out int id))
+        private string LangGet(string key, string sheet, string orig)
         {
-            int idx = CharmIDs.IndexOf(id);
-            if (idx >= 0)
-            {
-                return key.StartsWith("CHARM_NAME_")
-                    ? Charms[idx].DisplayName()
-                    : Charms[idx].Description();
-            }
-        }
-    }
+            if (sheet == "RANDO" && key.StartsWith("SHOP_DESCRIPTION_") && LangStrings.ContainsKey(key, sheet))
+                return LangStrings.Get(key, sheet);
 
-    return orig;
-}
+
+            if (sheet == "UI")
+            {
+                if (key == "CHARM_NAME_10")
+                    return localSettings.upgradedCharm_10
+                        ? LangStrings.Get("CHARM_NAME_HONOUR", "UI")
+                        : orig;
+
+                if (key == "CHARM_DESC_10")
+                    return localSettings.upgradedCharm_10
+                        ? LangStrings.Get("CHARM_DESC_HONOUR", "UI")
+                        : orig;
+            }
+
+            if (LangStrings.ContainsKey(key, sheet))
+                return LangStrings.Get(key, sheet);
+
+            if ((sheet == "UI" && (key.StartsWith("CHARM_NAME_") || key.StartsWith("CHARM_DESC_"))))
+            {
+                var parts = key.Split('_');
+                if (parts.Length == 3 && int.TryParse(parts[2], out int id))
+                {
+                    int idx = CharmIDs.IndexOf(id);
+                    if (idx >= 0)
+                    {
+                        return key.StartsWith("CHARM_NAME_")
+                            ? Charms[idx].DisplayName()
+                            : Charms[idx].Description();
+                    }
+                }
+            }
+
+            return orig;
+        }
 
 
 
