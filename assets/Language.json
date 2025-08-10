@@ -125,11 +125,11 @@
       "CHARM_DESC_HONOUR": "Un Charme unique offert par le roi d'Hallownest à son plus fidèle chevalier. Poli et restauré à son état d'origine.<br><br>Entoure son porteur d'une aura royale et héroïque.",
       "CUSTOM_ITEM_INTROS": "Vous avez reçu"
     },    "RANDO": {
-         "SHOP_DESCRIPTION_MarkOfPurity": "I see you wield a nail, and this charm looks to be made out of nails.<br>It will be yours... for a price.",
-      "SHOP_DESCRIPTION_VesselsLament": "I heard this charm is very good, but never risked to try myself.<br>Pay up, and you can find out if what they say is true.",
-      "SHOP_DESCRIPTION_BoonOfHallownest": "Found this lying around in fungal. I get shivers just by looking at it, and it looks very important.<br><br>Do you want it?",
-      "SHOP_DESCRIPTION_AbyssalBloom": "I bought this from some wierd-looking bug for a handful of geo.<br><br>I'll sell it to you if you pay enough.",
-      "SHOP_DESCRIPTION_HONOUR": "Ogrim left me this,i think you may meed it more.\n\nUpgrades Defender’s Crest into King’s Honour."
+   "SHOP_DESCRIPTION_MarkOfPurity": "J’ai remarqué ton habileté au maniement de l’aiguillon, or ce charme semble être un amalgame de lames.<br>Tu peux l’avoir… mais il y a un prix à payer.",
+   "SHOP_DESCRIPTION_VesselsLament": "J’ai entendu beaucoup d'éloges de ce charme, mais je ne me suis jamais risqué à l’essayer. <br>Paie, et tu pourras te forger ta propre opinion.",
+   "SHOP_DESCRIPTION_BoonOfHallownest": "Une trouvaille qui trainait dans les Cavernes Nocives. Le simple fait de le regarder me donne des frissons, son apparence n’est pas anodine. <br><br>Ce charme t’intéresse ?",
+   "SHOP_DESCRIPTION_AbyssalBloom": "Je me le suis procuré auprès d’un insecte biscornu pour une poignée de geos. <br><br>Je peux te le vendre si tu es prêt à y mettre une somme conséquente.",
+   "SHOP_DESCRIPTION_HONOUR": "Ogrim me l’a légué, mais je pense que tu en auras plus besoin que moi.<br><brAméliore l’écu du défenseur et le transforme en l’Honneur du Roi."
     }
   },
   "IT": {
@@ -298,4 +298,5 @@
     }
   }
 }
+
 
