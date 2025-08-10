@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using SFCore.Utils;
 using Random = UnityEngine.Random;
 using System.Collections;
 using HutongGames.PlayMaker.Actions;
+using Modding;
+using System.Linq;
 
 namespace PaleCourtCharms
 {
@@ -18,6 +21,16 @@ namespace PaleCourtCharms
         private const int BlastDamage = 35;
         private const int BlastDamageShaman = 45;
 
+        // Transcendence integration 
+        private bool _transcChecked = false;
+        private bool _transcAvailable = false;
+        private object _shamanInstance = null;
+        private MethodInfo _shamanEquippedMethod = null;
+        private MethodInfo _shamanEnlargeStatic = null; 
+        private Type _shamanType = null;
+
+        private bool _shamanEquippedCached = false;
+
         private void OnEnable()
         {
             _spellControl = _hc.spellControl;
@@ -28,7 +41,7 @@ namespace PaleCourtCharms
 
             PlayMakerFSM _pvControl = Instantiate(PaleCourtCharms.preloadedGO["PV"].LocateMyFSM("Control"), _hc.transform);
 
-            if(!PaleCourtCharms.preloadedGO.ContainsKey("Plume"))
+            if (!PaleCourtCharms.preloadedGO.ContainsKey("Plume"))
             {
                 GameObject plume = Instantiate(_pvControl.GetAction<SpawnObjectFromGlobalPool>("Plume Gen", 0).gameObject.Value);
                 plume.SetActive(false);
@@ -39,7 +52,7 @@ namespace PaleCourtCharms
                 PaleCourtCharms.preloadedGO["Plume"] = plume;
             }
 
-            if(!PaleCourtCharms.preloadedGO.ContainsKey("BoonDagger"))
+            if (!PaleCourtCharms.preloadedGO.ContainsKey("BoonDagger"))
             {
                 GameObject dagger = Instantiate(_pvControl.GetAction<FlingObjectsFromGlobalPoolTime>("SmallShot LowHigh").gameObject.Value);
                 dagger.SetActive(false);
@@ -58,16 +71,75 @@ namespace PaleCourtCharms
             PaleCourtCharms.Clips["Plume Up"] = (AudioClip)_pvControl.GetAction<AudioPlayerOneShotSingle>("Plume Up", 1).audioClip.Value;
 
             ModifySpellFSM(true);
+
+            //Update our cached flag whenever charms change:
+            ModHooks.CharmUpdateHook += OnCharmUpdate;
+            UpdateShamanAmpEquippedCache();
         }
 
         private void OnDisable()
         {
             ModifySpellFSM(false);
+            ModHooks.CharmUpdateHook -= OnCharmUpdate;
+        }
+
+        private void OnCharmUpdate(PlayerData pd, HeroController hc)
+        {
+            UpdateShamanAmpEquippedCache();
+        }
+
+        private void UpdateShamanAmpEquippedCache()
+        {
+            if (!_transcChecked) TryInitTranscendenceIntegration();
+
+            // If we don't have the equip method, we cannot check equip via Transcendence, so remain false.
+            if (!_transcAvailable || _shamanEquippedMethod == null || _shamanType == null)
+            {
+                _shamanEquippedCached = false;
+                return;
+            }
+
+            // Try to ensure we have a live Instance
+            if (_shamanInstance == null && _shamanType != null)
+            {
+                try
+                {
+                    var instanceProp = _shamanType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                    if (instanceProp != null)
+                    {
+                        _shamanInstance = instanceProp.GetValue(null);
+                    }
+                    else
+                    {
+                        var instanceField = _shamanType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                        if (instanceField != null) _shamanInstance = instanceField.GetValue(null);
+                    }
+                }
+                catch
+                {
+                    _shamanInstance = null;
+                }
+            }
+
+            if (_shamanInstance == null)
+            {
+                _shamanEquippedCached = false;
+                return;
+            }
+
+            try
+            {
+                _shamanEquippedCached = (bool)_shamanEquippedMethod.Invoke(_shamanInstance, null);
+            }
+            catch
+            {
+                _shamanEquippedCached = false;
+            }
         }
 
         private void ModifySpellFSM(bool enabled)
         {
-            if(enabled)
+            if (enabled)
             {
                 _spellControl.ChangeTransition("Level Check 3", "LEVEL 1", "Scream Antic1 Blasts");
                 _spellControl.ChangeTransition("Level Check 3", "LEVEL 2", "Scream Antic2 Blasts");
@@ -75,7 +147,7 @@ namespace PaleCourtCharms
                 _spellControl.ChangeTransition("Quake1 Down", "HERO LANDED", "Q1 Land Plumes");
                 _spellControl.ChangeTransition("Quake2 Down", "HERO LANDED", "Q2 Land Plumes");
 
-                if(!PlayerData.instance.GetBool(nameof(PlayerData.equippedCharm_11)))
+                if (!PlayerData.instance.GetBool(nameof(PlayerData.equippedCharm_11)))
                 {
                     _spellControl.ChangeTransition("Level Check", "LEVEL 1", "Fireball 1 SmallShots");
                     _spellControl.ChangeTransition("Level Check", "LEVEL 2", "Fireball 2 SmallShots");
@@ -94,18 +166,100 @@ namespace PaleCourtCharms
             }
         }
 
+        // Transcendence integration
+        private void TryInitTranscendenceIntegration()
+        {
+            if (_transcChecked) return;
+            _transcChecked = true;
+
+            try
+            {
+                var modObj = ModHooks.GetMod("Transcendence");
+                Assembly asm = null;
+                if (modObj is Mod modInstance)
+                {
+                    asm = modInstance.GetType().Assembly;
+                }
+                else
+                {
+                    asm = AppDomain.CurrentDomain.GetAssemblies()
+                        .FirstOrDefault(a =>
+                        {
+                            try { return a.GetType("Transcendence.ShamanAmp") != null; }
+                            catch { return false; }
+                        });
+                }
+
+                if (asm == null)
+                {
+                    _transcAvailable = false;
+                    return;
+                }
+
+                _shamanType = asm.GetType("Transcendence.ShamanAmp");
+                if (_shamanType == null)
+                {
+                    _transcAvailable = false;
+                    return;
+                }
+
+                var instanceProp = _shamanType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                if (instanceProp != null)
+                {
+                    _shamanInstance = instanceProp.GetValue(null);
+                }
+                else
+                {
+                    var instanceField = _shamanType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    if (instanceField != null) _shamanInstance = instanceField.GetValue(null);
+                }
+
+                _shamanEquippedMethod = _shamanType.GetMethod("Equipped", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                _shamanEnlargeStatic = _shamanType.GetMethod("Enlarge", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, null, new Type[] { typeof(GameObject) }, null);
+
+                _transcAvailable = (_shamanEquippedMethod != null) || (_shamanEnlargeStatic != null);
+            }
+            catch
+            {
+                _transcAvailable = false;
+                _shamanInstance = null;
+                _shamanEquippedMethod = null;
+                _shamanEnlargeStatic = null;
+                _shamanType = null;
+            }
+        }
+
+        private void MaybeCallTranscendenceEnlarge(GameObject obj)
+        {
+            if (!_transcAvailable || _shamanEnlargeStatic == null) return;
+            try
+            {
+                // static Enlarge is safe to call even if instance was null
+                _shamanEnlargeStatic.Invoke(null, new object[] { obj });
+            }
+            catch
+            {
+
+            }
+        }
+
         public void CastDaggers(bool upgraded)
         {
             bool shaman = PlayerData.instance.equippedCharm_19;
             int angleMin = shaman ? -30 : -25;
             int angleMax = shaman ? 30 : 25;
             int increment = shaman ? 20 : 25;
-            for(int angle = angleMin; angle <= angleMax; angle += increment)
+            for (int angle = angleMin; angle <= angleMax; angle += increment)
             {
-                GameObject dagger = Instantiate(PaleCourtCharms.preloadedGO["BoonDagger"], 
+                GameObject dagger = Instantiate(PaleCourtCharms.preloadedGO["BoonDagger"],
                     HeroController.instance.transform.position, Quaternion.identity);
                 dagger.SetActive(false);
-                if(angle != angleMin) Destroy(dagger.GetComponent<AudioSource>());
+                if (angle != angleMin) Destroy(dagger.GetComponent<AudioSource>());
+
+                if (_shamanEquippedCached)
+                {
+                    MaybeCallTranscendenceEnlarge(dagger);
+                }
 
                 Rigidbody2D rb = dagger.GetComponent<Rigidbody2D>();
                 rb.isKinematic = true;
@@ -123,16 +277,28 @@ namespace PaleCourtCharms
 
         public void CastPlumes(bool upgraded)
         {
-            for(float x = 2; x <= 10; x += 2)
+            for (float x = 2; x <= 10; x += 2)
             {
                 Vector2 pos = HeroController.instance.transform.position;
                 float plumeY = pos.y - 1.8f;
 
                 GameObject plumeL = Instantiate(PaleCourtCharms.preloadedGO["Plume"], new Vector2(pos.x - x, plumeY), Quaternion.identity);
+
+                if (_shamanEquippedCached)
+                {
+                    MaybeCallTranscendenceEnlarge(plumeL);
+                }
+
                 plumeL.SetActive(true);
                 plumeL.AddComponent<Plume>().upgraded = upgraded;
 
                 GameObject plumeR = Instantiate(PaleCourtCharms.preloadedGO["Plume"], new Vector2(pos.x + x, plumeY), Quaternion.identity);
+
+                if (_shamanEquippedCached)
+                {
+                    MaybeCallTranscendenceEnlarge(plumeR);
+                }
+
                 plumeR.SetActive(true);
                 plumeR.AddComponent<Plume>().upgraded = upgraded;
             }
@@ -146,13 +312,15 @@ namespace PaleCourtCharms
             // Enemy iframes last 0.2s
             IEnumerator CastBlastsCoro()
             {
-                blasts.Add(SpawnBlast(HeroController.instance.transform.position + Vector3.up * 4f, upgraded));
+                var first = SpawnBlast(HeroController.instance.transform.position + Vector3.up * 4f, upgraded);
+
+                blasts.Add(first);
                 yield return new WaitForSeconds(0.2f);
 
-                for(int i = 0; i < (upgraded ? 3 : 1); i++)
+                for (int i = 0; i < (upgraded ? 3 : 1); i++)
                 {
-                    blasts.Add(SpawnBlast(HeroController.instance.transform.position + 
-                        Vector3.up * Random.Range(4, 10) + Vector3.right * Random.Range(-3, 3), upgraded));
+                    blasts.Add(SpawnBlast(HeroController.instance.transform.position +
+                        Vector3.up * UnityEngine.Random.Range(4, 10) + Vector3.right * UnityEngine.Random.Range(-3, 3), upgraded));
                     yield return new WaitForSeconds(0.2f);
                 }
             }
@@ -160,9 +328,10 @@ namespace PaleCourtCharms
             {
                 yield return new WaitForSeconds(0.15f);
 
-                for(int i = 0; i < blasts.Count; i++)
+                for (int i = 0; i < blasts.Count; i++)
                 {
-                    Destroy(blasts[i].GetComponent<CircleCollider2D>());
+                    var b = blasts[i];
+                    if (b != null) Destroy(b.GetComponent<CircleCollider2D>());
                     yield return new WaitForSeconds(0.2f);
                 }
             }
@@ -170,9 +339,10 @@ namespace PaleCourtCharms
             {
                 yield return new WaitForSeconds(0.5f);
 
-                for(int i = 0; i < blasts.Count; i++)
+                for (int i = 0; i < blasts.Count; i++)
                 {
-                    Destroy(blasts[i]);
+                    var b = blasts[i];
+                    if (b != null) Destroy(b);
                     yield return new WaitForSeconds(0.2f);
                 }
             }
@@ -193,10 +363,22 @@ namespace PaleCourtCharms
             int hash = anim.GetCurrentAnimatorStateInfo(0).fullPathHash;
             anim.PlayInFixedTime(hash, -1, 0.75f);
 
+            if (_shamanEquippedCached)
+            {
+                MaybeCallTranscendenceEnlarge(blast);
+            }
+
             CircleCollider2D col = blast.AddComponent<CircleCollider2D>();
             col.offset = Vector2.down;
             col.radius = 3.5f;
             col.isTrigger = true;
+
+            // Scale collider radius to match any transform scaling applied by Enlarge
+            float scale = Math.Max(Mathf.Abs(blast.transform.localScale.x), Mathf.Abs(blast.transform.localScale.y));
+            if (!float.IsNaN(scale) && scale > 0f)
+            {
+                col.radius *= scale;
+            }
 
             DamageEnemies de = blast.AddComponent<DamageEnemies>();
             de.damageDealt = PlayerData.instance.equippedCharm_19 ? BlastDamageShaman : BlastDamage;
