@@ -79,7 +79,7 @@ namespace PaleCourtCharms
 
         public static SaveModSettings Settings => Instance?.localSettings;
 
-        public override string GetVersion() => "1.1.3";
+        public override string GetVersion() => "1.2.0";
 
         public PaleCourtCharms() : base("PaleCourtCharms")
         {
@@ -226,34 +226,31 @@ namespace PaleCourtCharms
         }
 
         private static bool randoInitialized = false;
-
-
-
-private static bool GetIsRando()
-{
-    return RandomizerMod.RandomizerMod.RS?.GenerationSettings != null;
-}
-
-private static void HandleNewGame(On.UIManager.orig_StartNewGame orig, UIManager self, bool permaDeath, bool bossRush)
-{
-   
-    orig(self, permaDeath, bossRush);
-
-    if (!randoInitialized)
-    {
-    
-        bool randoLoaded = ModHooks.GetMod("Randomizer 4") is Mod;
-
-        
-        bool isRandoSave = randoLoaded && GetIsRando();
-
-        if (isRandoSave)
+        private static bool GetIsRando()
         {
-            randoInitialized = true;
-            PaleCourtCharms.Instance.StartGame();
+            return RandomizerMod.RandomizerMod.RS?.GenerationSettings != null;
         }
-    }
-}
+    
+        private static void HandleNewGame(On.UIManager.orig_StartNewGame orig, UIManager self, bool permaDeath, bool bossRush)
+        {
+
+            orig(self, permaDeath, bossRush);
+
+            if (!randoInitialized)
+            {
+
+                bool randoLoaded = ModHooks.GetMod("Randomizer 4") is Mod;
+
+
+                bool isRandoSave = randoLoaded && GetIsRando();
+
+                if (isRandoSave)
+                {
+                    randoInitialized = true;
+                    PaleCourtCharms.Instance.StartGame();
+                }
+            }
+        }
 
         private void GameManager_StartNewGame(On.GameManager.orig_StartNewGame orig, GameManager gm, bool perma, bool bossRush)
         {
@@ -278,7 +275,7 @@ private static void HandleNewGame(On.UIManager.orig_StartNewGame orig, UIManager
 
         public void StartGame()
 {
-    var gmObj = GameManager.instance.gameObject;
+       var gmObj = GameManager.instance.gameObject;
    
     if (gmObj.GetComponent<Amulets>() == null)
     {
