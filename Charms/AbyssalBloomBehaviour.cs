@@ -10,6 +10,7 @@ using GlobalEnums;
 using Vasi;
 using Modding;
 using PaleCourtCharms;
+using System.Linq;
 namespace PaleCourtCharms
 {
     public class AbyssalBloomBehaviour : MonoBehaviour
@@ -29,6 +30,15 @@ namespace PaleCourtCharms
         private Coroutine _wallSlashCoro;
         private GameObject _wallSlash;
 
+        //Transcandence. Crystalmaster
+        private bool _crystalChecked = false;
+        private bool _crystalAvailable = false;
+        private Type _crystalType = null;
+        private object _crystalInstance = null;
+        private MethodInfo _crystalEquippedMethod = null;
+        private const float BloomSpeedBonusL1 = 0.05f; 
+        private const float BloomSpeedBonusL2 = 0.15f; 
+        private bool _crystalEquippedCached = false;
         private int _level;
         private bool _fury;
         private int _shadeSlashNum = 1;
@@ -71,6 +81,10 @@ namespace PaleCourtCharms
             On.tk2dSpriteAnimator.Play_string += Tk2dSpriteAnimatorPlay;
             On.KnightHatchling.OnEnable += KnightHatchlingOnEnable;
             On.SpriteFlash.FlashingFury += SpriteFlashFlashingFury;
+            ModHooks.CharmUpdateHook += OnCharmUpdate;
+            TryInitCrystalIntegration();
+            UpdateCrystalEquippedCache(); 
+            On.HeroController.Move += HeroControllerMoveHook;
         }
 
         private void OnDisable()
@@ -83,6 +97,8 @@ namespace PaleCourtCharms
             On.tk2dSpriteAnimator.Play_string -= Tk2dSpriteAnimatorPlay;
             On.KnightHatchling.OnEnable -= KnightHatchlingOnEnable;
             On.SpriteFlash.FlashingFury -= SpriteFlashFlashingFury;
+            On.HeroController.Move -= HeroControllerMoveHook;
+            ModHooks.CharmUpdateHook -= OnCharmUpdate;
         }
 
         public void SetLevel(int level)
@@ -106,6 +122,115 @@ namespace PaleCourtCharms
         }
 
         public void SetFury(bool fury) => _fury = fury;
+        private void OnCharmUpdate(PlayerData pd, HeroController hc) => UpdateCrystalEquippedCache();
+
+        private void TryInitCrystalIntegration()
+        {
+            if (_crystalChecked) return;
+            _crystalChecked = true;
+
+            try
+            {
+                var modObj = ModHooks.GetMod("Transcendence");
+                Assembly asm = null;
+                if (modObj is Mod modInstance) asm = modInstance.GetType().Assembly;
+                else
+                    asm = AppDomain.CurrentDomain.GetAssemblies()
+                        .FirstOrDefault(a => { try { return a.GetType("Transcendence.Crystalmaster") != null; } catch { return false; } });
+
+                if (asm == null) { _crystalAvailable = false; return; }
+
+                _crystalType = asm.GetType("Transcendence.Crystalmaster");
+                if (_crystalType == null) { _crystalAvailable = false; return; }
+
+                var instanceProp = _crystalType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                if (instanceProp != null) _crystalInstance = instanceProp.GetValue(null);
+                else
+                {
+                    var instanceField = _crystalType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    if (instanceField != null) _crystalInstance = instanceField.GetValue(null);
+                }
+
+                _crystalEquippedMethod = _crystalType.GetMethod("Equipped", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                _crystalAvailable = (_crystalEquippedMethod != null);
+            }
+            catch
+            {
+                _crystalAvailable = false;
+                _crystalInstance = null;
+                _crystalEquippedMethod = null;
+                _crystalType = null;
+            }
+        }
+
+        private void UpdateCrystalEquippedCache()
+        {
+            if (!_crystalChecked) TryInitCrystalIntegration();
+
+            if (!_crystalAvailable || _crystalEquippedMethod == null || _crystalType == null)
+            {
+                _crystalEquippedCached = false;
+                return;
+            }
+
+            if (_crystalInstance == null && _crystalType != null)
+            {
+                try
+                {
+                    var instanceProp = _crystalType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                    if (instanceProp != null) _crystalInstance = instanceProp.GetValue(null);
+                    else
+                    {
+                        var instanceField = _crystalType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                        if (instanceField != null) _crystalInstance = instanceField.GetValue(null);
+                    }
+                }
+                catch { _crystalInstance = null; }
+            }
+
+            if (_crystalInstance == null)
+            {
+                _crystalEquippedCached = false;
+                return;
+            }
+
+            try
+            {
+                _crystalEquippedCached = (bool)_crystalEquippedMethod.Invoke(_crystalInstance, null);
+            }
+            catch
+            {
+                _crystalEquippedCached = false;
+            }
+        }
+        private void HeroControllerMoveHook(On.HeroController.orig_Move orig, HeroController self, float dir)
+        {
+            orig(self, dir);
+
+            // only apply bloom multiplier when there's an active bloom level and crystalmaster is present
+            if (_level <= 0) return;
+
+            if (!_crystalEquippedCached) return;
+
+            float bonus = (_level == 2) ? BloomSpeedBonusL2 : BloomSpeedBonusL1;
+
+            try
+            {
+                if (self.TryGetComponent<Rigidbody2D>(out var rb))
+                {
+                    var v = rb.velocity;
+                    if (Mathf.Abs(v.x) > 0.001f)
+                    {
+                        v.x *= (1f + bonus);
+                        rb.velocity = v;
+                    }
+                }
+            }
+            catch
+            {
+                
+            }
+        }
 
         private void ModifySlashColors(bool modify)
         {
@@ -149,6 +274,27 @@ namespace PaleCourtCharms
                 hitInstance.Multiplier += 2f * damageBuff;
             }
             //Log("Multiplier is currently " + damageBuff + " to deal total damage of " + hitInstance.DamageDealt * hitInstance.Multiplier);
+            try
+            {
+                //empty try catch,used to have logging.
+                //exists so the timing on applying lemm strength is consistat and not rng
+            }
+            catch (Exception)
+            {
+
+            }
+
+            if (hitInstance.AttackType is AttackTypes.Nail or AttackTypes.NailBeam)
+            {
+
+                hitInstance.Multiplier += damageBuff + (_fury ? 0.75f : 0f);
+            }
+   
+             if (hitInstance.AttackType == AttackTypes.SharpShadow)
+            {
+                hitInstance.Multiplier += 2f * damageBuff;
+            }
+
             orig(self, hitInstance);
         }
 
@@ -312,7 +458,9 @@ namespace PaleCourtCharms
         new Vector2(3.0f, 1.0f),
         new Vector2(0.0f, 2.0f),
         new Vector2(-3f, 0.0f) // covers player body
-    };
+
+            };
+
             slashPoly.offset = Vector2.zero;
             slashPoly.isTrigger = true;
 
