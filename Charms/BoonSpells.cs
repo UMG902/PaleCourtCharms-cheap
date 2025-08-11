@@ -20,16 +20,23 @@ namespace PaleCourtCharms
         private const float DaggerSpeed = 50f;
         private const int BlastDamage = 35;
         private const int BlastDamageShaman = 45;
-
-        // Transcendence integration 
+        // Transcendence. Shaman Amp integration
         private bool _transcChecked = false;
         private bool _transcAvailable = false;
         private object _shamanInstance = null;
         private MethodInfo _shamanEquippedMethod = null;
         private MethodInfo _shamanEnlargeStatic = null; 
         private Type _shamanType = null;
-
         private bool _shamanEquippedCached = false;
+
+        // Transcendence. Snail Soul integration
+        private bool _snailChecked = false;
+        private bool _snailAvailable = false;
+        private object _snailInstance = null;
+        private MethodInfo _snailEquippedMethod = null;
+        private Type _snailType = null;
+        private bool _snailEquippedCached = false;
+        private const float SnailSlowdown = 4f;
 
         private void OnEnable()
         {
@@ -72,9 +79,8 @@ namespace PaleCourtCharms
 
             ModifySpellFSM(true);
 
-            //Update our cached flag whenever charms change:
             ModHooks.CharmUpdateHook += OnCharmUpdate;
-            UpdateShamanAmpEquippedCache();
+            UpdateAllCharmCaches();
         }
 
         private void OnDisable()
@@ -85,40 +91,38 @@ namespace PaleCourtCharms
 
         private void OnCharmUpdate(PlayerData pd, HeroController hc)
         {
+            UpdateAllCharmCaches();
+        }
+
+        private void UpdateAllCharmCaches()
+        {
             UpdateShamanAmpEquippedCache();
+            UpdateSnailEquippedCache();
         }
 
         private void UpdateShamanAmpEquippedCache()
         {
             if (!_transcChecked) TryInitTranscendenceIntegration();
 
-            // If we don't have the equip method, we cannot check equip via Transcendence, so remain false.
             if (!_transcAvailable || _shamanEquippedMethod == null || _shamanType == null)
             {
                 _shamanEquippedCached = false;
                 return;
             }
 
-            // Try to ensure we have a live Instance
             if (_shamanInstance == null && _shamanType != null)
             {
                 try
                 {
                     var instanceProp = _shamanType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
-                    if (instanceProp != null)
-                    {
-                        _shamanInstance = instanceProp.GetValue(null);
-                    }
+                    if (instanceProp != null) _shamanInstance = instanceProp.GetValue(null);
                     else
                     {
                         var instanceField = _shamanType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
                         if (instanceField != null) _shamanInstance = instanceField.GetValue(null);
                     }
                 }
-                catch
-                {
-                    _shamanInstance = null;
-                }
+                catch { _shamanInstance = null; }
             }
 
             if (_shamanInstance == null)
@@ -131,10 +135,45 @@ namespace PaleCourtCharms
             {
                 _shamanEquippedCached = (bool)_shamanEquippedMethod.Invoke(_shamanInstance, null);
             }
-            catch
+            catch { _shamanEquippedCached = false; }
+        }
+
+        private void UpdateSnailEquippedCache()
+        {
+            if (!_snailChecked) TryInitSnailIntegration();
+
+            if (!_snailAvailable || _snailEquippedMethod == null || _snailType == null)
             {
-                _shamanEquippedCached = false;
+                _snailEquippedCached = false;
+                return;
             }
+
+            if (_snailInstance == null && _snailType != null)
+            {
+                try
+                {
+                    var instanceProp = _snailType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                    if (instanceProp != null) _snailInstance = instanceProp.GetValue(null);
+                    else
+                    {
+                        var instanceField = _snailType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                        if (instanceField != null) _snailInstance = instanceField.GetValue(null);
+                    }
+                }
+                catch { _snailInstance = null; }
+            }
+
+            if (_snailInstance == null)
+            {
+                _snailEquippedCached = false;
+                return;
+            }
+
+            try
+            {
+                _snailEquippedCached = (bool)_snailEquippedMethod.Invoke(_snailInstance, null);
+            }
+            catch { _snailEquippedCached = false; }
         }
 
         private void ModifySpellFSM(bool enabled)
@@ -166,7 +205,7 @@ namespace PaleCourtCharms
             }
         }
 
-        // Transcendence integration
+        // Transcendence (Shaman Amp) integration
         private void TryInitTranscendenceIntegration()
         {
             if (_transcChecked) return;
@@ -176,10 +215,7 @@ namespace PaleCourtCharms
             {
                 var modObj = ModHooks.GetMod("Transcendence");
                 Assembly asm = null;
-                if (modObj is Mod modInstance)
-                {
-                    asm = modInstance.GetType().Assembly;
-                }
+                if (modObj is Mod modInstance) asm = modInstance.GetType().Assembly;
                 else
                 {
                     asm = AppDomain.CurrentDomain.GetAssemblies()
@@ -190,24 +226,13 @@ namespace PaleCourtCharms
                         });
                 }
 
-                if (asm == null)
-                {
-                    _transcAvailable = false;
-                    return;
-                }
+                if (asm == null) { _transcAvailable = false; return; }
 
                 _shamanType = asm.GetType("Transcendence.ShamanAmp");
-                if (_shamanType == null)
-                {
-                    _transcAvailable = false;
-                    return;
-                }
+                if (_shamanType == null) { _transcAvailable = false; return; }
 
                 var instanceProp = _shamanType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
-                if (instanceProp != null)
-                {
-                    _shamanInstance = instanceProp.GetValue(null);
-                }
+                if (instanceProp != null) _shamanInstance = instanceProp.GetValue(null);
                 else
                 {
                     var instanceField = _shamanType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
@@ -232,14 +257,53 @@ namespace PaleCourtCharms
         private void MaybeCallTranscendenceEnlarge(GameObject obj)
         {
             if (!_transcAvailable || _shamanEnlargeStatic == null) return;
+            try { _shamanEnlargeStatic.Invoke(null, new object[] { obj }); }
+            catch { }
+        }
+
+        // Snail Soul integration
+        private void TryInitSnailIntegration()
+        {
+            if (_snailChecked) return;
+            _snailChecked = true;
+
             try
             {
-                // static Enlarge is safe to call even if instance was null
-                _shamanEnlargeStatic.Invoke(null, new object[] { obj });
+                var modObj = ModHooks.GetMod("Transcendence");
+                Assembly asm = null;
+                if (modObj is Mod modInstance) asm = modInstance.GetType().Assembly;
+                else
+                {
+                    asm = AppDomain.CurrentDomain.GetAssemblies()
+                        .FirstOrDefault(a =>
+                        {
+                            try { return a.GetType("Transcendence.SnailSoul") != null; }
+                            catch { return false; }
+                        });
+                }
+
+                if (asm == null) { _snailAvailable = false; return; }
+
+                _snailType = asm.GetType("Transcendence.SnailSoul");
+                if (_snailType == null) { _snailAvailable = false; return; }
+
+                var instanceProp = _snailType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                if (instanceProp != null) _snailInstance = instanceProp.GetValue(null);
+                else
+                {
+                    var instanceField = _snailType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    if (instanceField != null) _snailInstance = instanceField.GetValue(null);
+                }
+
+                _snailEquippedMethod = _snailType.GetMethod("Equipped", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                _snailAvailable = (_snailEquippedMethod != null);
             }
             catch
             {
-
+                _snailAvailable = false;
+                _snailInstance = null;
+                _snailEquippedMethod = null;
+                _snailType = null;
             }
         }
 
@@ -249,6 +313,10 @@ namespace PaleCourtCharms
             int angleMin = shaman ? -30 : -25;
             int angleMax = shaman ? 30 : 25;
             int increment = shaman ? 20 : 25;
+
+            float snailMultiplier = 1f;
+            if (_snailEquippedCached) snailMultiplier = 1f / SnailSlowdown;
+
             for (int angle = angleMin; angle <= angleMax; angle += increment)
             {
                 GameObject dagger = Instantiate(PaleCourtCharms.preloadedGO["BoonDagger"],
@@ -263,8 +331,12 @@ namespace PaleCourtCharms
 
                 Rigidbody2D rb = dagger.GetComponent<Rigidbody2D>();
                 rb.isKinematic = true;
-                float xVel = DaggerSpeed * Mathf.Cos(Mathf.Deg2Rad * angle) * -HeroController.instance.transform.localScale.x;
-                float yVel = DaggerSpeed * Mathf.Sin(Mathf.Deg2Rad * angle);
+
+                float baseXVel = DaggerSpeed * Mathf.Cos(Mathf.Deg2Rad * angle) * -HeroController.instance.transform.localScale.x;
+                float baseYVel = DaggerSpeed * Mathf.Sin(Mathf.Deg2Rad * angle);
+
+                float xVel = baseXVel * snailMultiplier;
+                float yVel = baseYVel * snailMultiplier;
 
                 dagger.SetActive(true);
                 rb.velocity = new Vector2(xVel, yVel);
@@ -309,7 +381,6 @@ namespace PaleCourtCharms
         {
             List<GameObject> blasts = new List<GameObject>();
 
-            // Enemy iframes last 0.2s
             IEnumerator CastBlastsCoro()
             {
                 var first = SpawnBlast(HeroController.instance.transform.position + Vector3.up * 4f, upgraded);
@@ -373,12 +444,8 @@ namespace PaleCourtCharms
             col.radius = 3.5f;
             col.isTrigger = true;
 
-            // Scale collider radius to match any transform scaling applied by Enlarge
             float scale = Math.Max(Mathf.Abs(blast.transform.localScale.x), Mathf.Abs(blast.transform.localScale.y));
-            if (!float.IsNaN(scale) && scale > 0f)
-            {
-                col.radius *= scale;
-            }
+            if (!float.IsNaN(scale) && scale > 0f) col.radius *= scale;
 
             DamageEnemies de = blast.AddComponent<DamageEnemies>();
             de.damageDealt = PlayerData.instance.equippedCharm_19 ? BlastDamageShaman : BlastDamage;
@@ -407,5 +474,6 @@ namespace PaleCourtCharms
             }
             GameManager.instance.StartCoroutine(Play());
         }
+    
     }
 }
