@@ -3,8 +3,7 @@ A hollow knight mod that adds charms from [Pale Court](https://github.com/PaleCo
 
 Pale Court Charms has a Randomizer 4 integration,with options to enable charms and rando costs.Or you can not enable the connection and charms will have default costs and placements.
 
-Is not expected to work with other mods that add charms,or change abillities.
-
+Is not expected to work with other mods that add charms,or change abillities.                                                                                          
 However,it will work with transcendence and even has a few interactions.Not chaos orb,at least yet.
 
 See [SpoilerCharmEffects.md](https://github.com/Roma-337/PaleCourtCharms/blob/main/SpoilerCharmEffects.md) to see what each charm does,it's cost and where to find it.
