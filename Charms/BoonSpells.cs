@@ -20,12 +20,13 @@ namespace PaleCourtCharms
         private const float DaggerSpeed = 50f;
         private const int BlastDamage = 35;
         private const int BlastDamageShaman = 45;
+
         // Transcendence. Shaman Amp integration
         private bool _transcChecked = false;
         private bool _transcAvailable = false;
         private object _shamanInstance = null;
         private MethodInfo _shamanEquippedMethod = null;
-        private MethodInfo _shamanEnlargeStatic = null; 
+        private MethodInfo _shamanEnlargeStatic = null;
         private Type _shamanType = null;
         private bool _shamanEquippedCached = false;
 
@@ -38,49 +39,77 @@ namespace PaleCourtCharms
         private bool _snailEquippedCached = false;
         private const float SnailSlowdown = 4f;
 
+        // Let Vespa's Vengeance take priority
+        private bool _vespaChecked = false;
+        private bool _vespaAvailable = false;
+        private object _vespaInstance = null;
+        private MethodInfo _vespaEquippedMethod = null;
+        private Type _vespaType = null;
+        private bool _vespaEquippedCached = false;
+
         private void OnEnable()
         {
-            _spellControl = _hc.spellControl;
+            if (HeroController.instance == null || HeroController.instance.spellControl == null)
+                return;
 
-            GameObject fireballParent = _spellControl.GetAction<SpawnObjectFromGlobalPool>("Fireball 2", 3).gameObject.Value;
-            PlayMakerFSM fireballCast = fireballParent.LocateMyFSM("Fireball Cast");
-            _audioPlayer = fireballCast.GetAction<AudioPlayerOneShotSingle>("Cast Right", 3).audioPlayer.Value;
+            InitOnce();
+        }
 
-            PlayMakerFSM _pvControl = Instantiate(PaleCourtCharms.preloadedGO["PV"].LocateMyFSM("Control"), _hc.transform);
-
-            if (!PaleCourtCharms.preloadedGO.ContainsKey("Plume"))
+        private void InitOnce()
+        {
+            try
             {
-                GameObject plume = Instantiate(_pvControl.GetAction<SpawnObjectFromGlobalPool>("Plume Gen", 0).gameObject.Value);
-                plume.SetActive(false);
-                plume.layer = (int)GlobalEnums.PhysLayers.HERO_ATTACK;
-                plume.tag = "Hero Spell";
-                Destroy(plume.GetComponent<DamageHero>());
-                DontDestroyOnLoad(plume);
-                PaleCourtCharms.preloadedGO["Plume"] = plume;
-            }
+                _hc = HeroController.instance;
+                _spellControl = _hc?.spellControl;
+                if (_spellControl == null) return;
 
-            if (!PaleCourtCharms.preloadedGO.ContainsKey("BoonDagger"))
+                GameObject fireballParent = _spellControl.GetAction<SpawnObjectFromGlobalPool>("Fireball 2", 3).gameObject.Value;
+                PlayMakerFSM fireballCast = fireballParent.LocateMyFSM("Fireball Cast");
+                _audioPlayer = fireballCast.GetAction<AudioPlayerOneShotSingle>("Cast Right", 3).audioPlayer.Value;
+
+                PlayMakerFSM _pvControl = Instantiate(PaleCourtCharms.preloadedGO["PV"].LocateMyFSM("Control"), _hc.transform);
+
+                if (!PaleCourtCharms.preloadedGO.ContainsKey("Plume"))
+                {
+                    GameObject plume = Instantiate(_pvControl.GetAction<SpawnObjectFromGlobalPool>("Plume Gen", 0).gameObject.Value);
+                    plume.SetActive(false);
+                    plume.layer = (int)GlobalEnums.PhysLayers.HERO_ATTACK;
+                    plume.tag = "Hero Spell";
+                    Destroy(plume.GetComponent<DamageHero>());
+                    DontDestroyOnLoad(plume);
+                    PaleCourtCharms.preloadedGO["Plume"] = plume;
+                }
+
+                if (!PaleCourtCharms.preloadedGO.ContainsKey("BoonDagger"))
+                {
+                    GameObject dagger = Instantiate(_pvControl.GetAction<FlingObjectsFromGlobalPoolTime>("SmallShot LowHigh").gameObject.Value);
+                    dagger.SetActive(false);
+                    dagger.layer = (int)GlobalEnums.PhysLayers.HERO_ATTACK;
+                    dagger.tag = "Hero Spell";
+                    Destroy(dagger.GetComponent<DamageHero>());
+                    Destroy(dagger.LocateMyFSM("Control"));
+                    var dribble = dagger.FindGameObjectInChildren("Dribble L");
+                    if (dribble != null) dribble.layer = 9;
+                    var glow = dagger.FindGameObjectInChildren("Glow");
+                    if (glow != null) glow.layer = 9;
+                    var beam = dagger.FindGameObjectInChildren("Beam");
+                    if (beam != null) beam.layer = 9;
+                    DontDestroyOnLoad(dagger);
+                    PaleCourtCharms.preloadedGO["BoonDagger"] = dagger;
+                }
+
+                PaleCourtCharms.Clips["Burst"] = (AudioClip)_pvControl.GetAction<AudioPlayerOneShotSingle>("Focus Burst", 8).audioClip.Value;
+                PaleCourtCharms.Clips["Plume Up"] = (AudioClip)_pvControl.GetAction<AudioPlayerOneShotSingle>("Plume Up", 1).audioClip.Value;
+
+                ModifySpellFSM(true);
+
+                ModHooks.CharmUpdateHook += OnCharmUpdate;
+                UpdateAllCharmCaches();
+            }
+            catch (Exception)
             {
-                GameObject dagger = Instantiate(_pvControl.GetAction<FlingObjectsFromGlobalPoolTime>("SmallShot LowHigh").gameObject.Value);
-                dagger.SetActive(false);
-                dagger.layer = (int)GlobalEnums.PhysLayers.HERO_ATTACK;
-                dagger.tag = "Hero Spell";
-                Destroy(dagger.GetComponent<DamageHero>());
-                Destroy(dagger.LocateMyFSM("Control"));
-                dagger.FindGameObjectInChildren("Dribble L").layer = 9;
-                dagger.FindGameObjectInChildren("Glow").layer = 9;
-                dagger.FindGameObjectInChildren("Beam").layer = 9;
-                DontDestroyOnLoad(dagger);
-                PaleCourtCharms.preloadedGO["BoonDagger"] = dagger;
+                // swallow to avoid breaking initialization
             }
-
-            PaleCourtCharms.Clips["Burst"] = (AudioClip)_pvControl.GetAction<AudioPlayerOneShotSingle>("Focus Burst", 8).audioClip.Value;
-            PaleCourtCharms.Clips["Plume Up"] = (AudioClip)_pvControl.GetAction<AudioPlayerOneShotSingle>("Plume Up", 1).audioClip.Value;
-
-            ModifySpellFSM(true);
-
-            ModHooks.CharmUpdateHook += OnCharmUpdate;
-            UpdateAllCharmCaches();
         }
 
         private void OnDisable()
@@ -98,6 +127,7 @@ namespace PaleCourtCharms
         {
             UpdateShamanAmpEquippedCache();
             UpdateSnailEquippedCache();
+            UpdateVespaEquippedCache();
         }
 
         private void UpdateShamanAmpEquippedCache()
@@ -178,10 +208,16 @@ namespace PaleCourtCharms
 
         private void ModifySpellFSM(bool enabled)
         {
+            if (_spellControl == null) return;
+
             if (enabled)
             {
-                _spellControl.ChangeTransition("Level Check 3", "LEVEL 1", "Scream Antic1 Blasts");
-                _spellControl.ChangeTransition("Level Check 3", "LEVEL 2", "Scream Antic2 Blasts");
+                // If Vespa's vengence is equipped let it take priority
+                if (!IsVespaEquipped())
+                {
+                    _spellControl.ChangeTransition("Level Check 3", "LEVEL 1", "Scream Antic1 Blasts");
+                    _spellControl.ChangeTransition("Level Check 3", "LEVEL 2", "Scream Antic2 Blasts");
+                }
 
                 _spellControl.ChangeTransition("Quake1 Down", "HERO LANDED", "Q1 Land Plumes");
                 _spellControl.ChangeTransition("Quake2 Down", "HERO LANDED", "Q2 Land Plumes");
@@ -194,8 +230,12 @@ namespace PaleCourtCharms
             }
             else
             {
-                _spellControl.ChangeTransition("Level Check 3", "LEVEL 1", "Scream Antic1");
-                _spellControl.ChangeTransition("Level Check 3", "LEVEL 2", "Scream Antic2");
+                // When disabling only restore Scream antic transitions if Vespa is not equipped.
+                if (!IsVespaEquipped())
+                {
+                    _spellControl.ChangeTransition("Level Check 3", "LEVEL 1", "Scream Antic1");
+                    _spellControl.ChangeTransition("Level Check 3", "LEVEL 2", "Scream Antic2");
+                }
 
                 _spellControl.ChangeTransition("Quake1 Down", "HERO LANDED", "Quake1 Land");
                 _spellControl.ChangeTransition("Quake2 Down", "HERO LANDED", "Q2 Land");
@@ -304,6 +344,102 @@ namespace PaleCourtCharms
                 _snailInstance = null;
                 _snailEquippedMethod = null;
                 _snailType = null;
+            }
+        }
+
+        // Vespa integration init
+        private void TryInitVespaIntegration()
+        {
+            if (_vespaChecked) return;
+            _vespaChecked = true;
+            try
+            {
+                var modObj = ModHooks.GetMod("Transcendence");
+                Assembly asm = null;
+                if (modObj is Mod modInstance) asm = modInstance.GetType().Assembly;
+                else
+                    asm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => { try { return a.GetType("Transcendence.VespasVengeance") != null; } catch { return false; } });
+
+                if (asm == null) { _vespaAvailable = false; return; }
+
+                _vespaType = asm.GetType("Transcendence.VespasVengeance");
+                if (_vespaType == null) { _vespaAvailable = false; return; }
+
+                var instanceProp = _vespaType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                if (instanceProp != null) _vespaInstance = instanceProp.GetValue(null);
+                else
+                {
+                    var instanceField = _vespaType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    if (instanceField != null) _vespaInstance = instanceField.GetValue(null);
+                }
+
+                _vespaEquippedMethod = _vespaType.GetMethod("Equipped", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                _vespaAvailable = (_vespaEquippedMethod != null);
+            }
+            catch
+            {
+                _vespaAvailable = false;
+                _vespaInstance = null;
+                _vespaEquippedMethod = null;
+                _vespaType = null;
+            }
+        }
+
+        private void UpdateVespaEquippedCache()
+        {
+            if (!_vespaChecked) TryInitVespaIntegration();
+            if (!_vespaAvailable || _vespaEquippedMethod == null || _vespaType == null) { _vespaEquippedCached = false; return; }
+
+            if (_vespaInstance == null && _vespaType != null)
+            {
+                try
+                {
+                    var instanceProp = _vespaType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                    if (instanceProp != null) _vespaInstance = instanceProp.GetValue(null);
+                    else
+                    {
+                        var instanceField = _vespaType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                        if (instanceField != null) _vespaInstance = instanceField.GetValue(null);
+                    }
+                }
+                catch { _vespaInstance = null; }
+            }
+
+            if (_vespaInstance == null) { _vespaEquippedCached = false; return; }
+
+            try { _vespaEquippedCached = (bool)_vespaEquippedMethod.Invoke(_vespaInstance, null); }
+            catch { _vespaEquippedCached = false; }
+        }
+
+        private bool IsVespaEquipped()
+        {
+            if (!_vespaChecked) TryInitVespaIntegration();
+            if (!_vespaAvailable || _vespaEquippedMethod == null || _vespaType == null) return false;
+
+            if (_vespaInstance == null)
+            {
+                try
+                {
+                    var instanceProp = _vespaType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                    if (instanceProp != null) _vespaInstance = instanceProp.GetValue(null);
+                    else
+                    {
+                        var instanceField = _vespaType.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                        if (instanceField != null) _vespaInstance = instanceField.GetValue(null);
+                    }
+                }
+                catch { _vespaInstance = null; }
+            }
+
+            if (_vespaInstance == null) return false;
+
+            try
+            {
+                return (bool)_vespaEquippedMethod.Invoke(_vespaInstance, null);
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -474,6 +610,5 @@ namespace PaleCourtCharms
             }
             GameManager.instance.StartCoroutine(Play());
         }
-    
     }
 }
