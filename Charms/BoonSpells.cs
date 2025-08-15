@@ -477,7 +477,10 @@ namespace PaleCourtCharms
                 dagger.SetActive(true);
                 rb.velocity = new Vector2(xVel, yVel);
 
-                dagger.AddComponent<Dagger>().upgraded = upgraded;
+                var daggerComp = dagger.AddComponent<Dagger>();
+                daggerComp.upgraded = upgraded;
+                daggerComp.shamanEquipped = _shamanEquippedCached;
+                daggerComp.snailEquipped = _snailEquippedCached;
 
                 Destroy(dagger, 5f);
             }
@@ -612,3 +615,4 @@ namespace PaleCourtCharms
         }
     }
 }
+
