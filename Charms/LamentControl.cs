@@ -22,7 +22,8 @@ namespace PaleCourtCharms
         private HeroController _hc = HeroController.instance;
         private PlayMakerFSM _pvControl;
         private void OnEnable()
-        {    On.DamageEnemies.FixedUpdate += SuppressDamageEnemiesError;
+        {
+            On.DamageEnemies.FixedUpdate += SuppressDamageEnemiesError;
             On.HealthManager.TakeDamage += ApplyStatus;
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged += ClearList;
 
@@ -42,17 +43,18 @@ namespace PaleCourtCharms
                 _spellControl.InsertMethod("Focus Heal 2 Blast", 18, BlastControlMain);
             }
 
-            foreach(var pool in ObjectPool.instance.startupPools)
+            foreach (var pool in ObjectPool.instance.startupPools)
             {
-                if(pool.prefab.name == "Knight Spore Cloud")
+                if (pool.prefab.name == "Knight Spore Cloud")
                 {
                     PaleCourtCharms.preloadedGO["SporeCloud"] = pool.prefab;
                 }
-                if(pool.prefab.name == "Knight Dung Cloud")
+                if (pool.prefab.name == "Knight Dung Cloud")
                 {
                     PaleCourtCharms.preloadedGO["DungCloud"] = pool.prefab;
                 }
             }
+            FloristInterop.Init();
         }
         private void BlastControlCancel()
         {
@@ -402,14 +404,41 @@ namespace PaleCourtCharms
 
             blastCollider.offset = Vector3.down;
             blastCollider.isTrigger = true;
-           
-          
+        
             _blast.AddComponent<DamageEnemies>();
-            DamageEnemies damageEnemies = _blast.GetComponent<DamageEnemies>();
-            damageEnemies.damageDealt = _pd.GetBool("equippedCharm_" + Charms.DeepFocus) ? 60 : 30;
-            damageEnemies.attackType = AttackTypes.Spell;
-            damageEnemies.ignoreInvuln = false;
-            damageEnemies.enabled = true;
+
+            int baseDamage = 30;
+            float multiplier = 1f;
+
+            if (_pd.GetBool("equippedCharm_" + Charms.DeepFocus))
+                multiplier *= 2f;
+
+            if (FloristInterop.IsEquipped())
+                multiplier *= 2f;
+
+            int finalDamage = Mathf.Max(1, Mathf.RoundToInt(baseDamage * multiplier));
+
+            var des = _blast.GetComponentsInChildren<DamageEnemies>(true);
+            if (des == null || des.Length == 0)
+            {
+                var d = _blast.GetComponent<DamageEnemies>();
+                if (d == null) d = _blast.AddComponent<DamageEnemies>();
+                d.damageDealt = finalDamage;
+                d.attackType = AttackTypes.Spell;
+                d.ignoreInvuln = false;
+                d.enabled = true;
+            }
+            else
+            {
+                foreach (var d in des)
+                {
+                    d.damageDealt = finalDamage;
+                    d.attackType = AttackTypes.Spell;
+                    d.ignoreInvuln = false;
+                    d.enabled = true;
+                }
+            }
+
             this.PlayAudio((AudioClip)_pvControl.GetAction<AudioPlayerOneShotSingle>("Focus Burst", 8).audioClip.Value, 0, 1.5f);
           
 
@@ -418,8 +447,7 @@ namespace PaleCourtCharms
             {
                 if(_pd.GetBool("equippedCharm_" + Charms.DefendersCrest))
                 {
-                    if(PaleCourtCharms.Settings.
-upgradedCharm_10)
+                    if(PaleCourtCharms.Settings.upgradedCharm_10)
                     {
                         Instantiate(_hc.GetComponent<RoyalAura>().dungCloud, transform.position, Quaternion.identity).SetActive(true);
                     }
