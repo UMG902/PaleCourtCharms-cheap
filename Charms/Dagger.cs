@@ -173,13 +173,11 @@ namespace PaleCourtCharms
 
                     yield return new WaitForSeconds(interval);
 
-                    // safety check
                     if (target == null) yield break;
                     if (this == null) yield break;
 
                     DoHit(target);
 
-                    // recalc in case flags changed
                     interval = GetMultiHitInterval();
                 }
             }
@@ -211,8 +209,6 @@ namespace PaleCourtCharms
             smallShotHit.DamageDealt = upgraded ? DaggerDamageUpgraded : DaggerDamage;
             smallShotHit.AttackType = AttackTypes.Spell;
             smallShotHit.IgnoreInvulnerable = true;
-
-            // alternate source
             smallShotHit.Source = _toggleSource ? gameObject : null;
             _toggleSource = !_toggleSource;
 
@@ -229,4 +225,5 @@ namespace PaleCourtCharms
         }
     }
 }
+
 
