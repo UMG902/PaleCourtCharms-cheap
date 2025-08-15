@@ -11,9 +11,7 @@ namespace PaleCourtCharms
         public bool upgraded = false;
         public bool shamanEquipped = false;
         public bool snailEquipped = false;
-
         private readonly Dictionary<GameObject, Coroutine> _activeTargets = new Dictionary<GameObject, Coroutine>();
-
         private bool _toggleSource = false;
 
         private void OnDestroy()
@@ -99,17 +97,19 @@ namespace PaleCourtCharms
                     }
                     catch
                     {
+                     
                         return null;
                     }
                 }
             }
             catch
             {
-
+         
             }
 
             return null;
         }
+
         private void SafeStopCoroutine(Coroutine c)
         {
             if (c == null) return;
@@ -126,7 +126,7 @@ namespace PaleCourtCharms
                     }
                     catch
                     {
-
+                      
                     }
                 }
 
@@ -138,13 +138,13 @@ namespace PaleCourtCharms
                     }
                     catch
                     {
-                        
+                 
                     }
                 }
             }
             catch
             {
-             
+          
             }
         }
         private float GetMultiHitInterval()
@@ -158,22 +158,48 @@ namespace PaleCourtCharms
         private IEnumerator MultiHitTargetCoroutine(GameObject target)
         {
             if (target == null) yield break;
+
+            GameObject keyRef = target;
+
             DoHit(target);
 
             float interval = GetMultiHitInterval();
 
-            while (target != null)
+            try
             {
-                if (this == null) yield break;
+                while (target != null)
+                {
+                    if (this == null) yield break;
 
-                yield return new WaitForSeconds(interval);
+                    yield return new WaitForSeconds(interval);
 
-                if (target == null) yield break;
-                if (this == null) yield break;
+                    // safety check
+                    if (target == null) yield break;
+                    if (this == null) yield break;
 
-                DoHit(target);
+                    DoHit(target);
 
-                interval = GetMultiHitInterval();
+                    // recalc in case flags changed
+                    interval = GetMultiHitInterval();
+                }
+            }
+            finally
+            {
+                try
+                {
+                    var keys = new List<GameObject>(_activeTargets.Keys);
+                    foreach (var k in keys)
+                    {
+                        if (k == keyRef)
+                        {
+                            _activeTargets.Remove(k);
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                }
             }
         }
 
@@ -186,7 +212,7 @@ namespace PaleCourtCharms
             smallShotHit.AttackType = AttackTypes.Spell;
             smallShotHit.IgnoreInvulnerable = true;
 
-
+            // alternate source
             smallShotHit.Source = _toggleSource ? gameObject : null;
             _toggleSource = !_toggleSource;
 
@@ -203,3 +229,4 @@ namespace PaleCourtCharms
         }
     }
 }
+
