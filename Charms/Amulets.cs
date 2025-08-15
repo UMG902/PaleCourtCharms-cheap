@@ -20,7 +20,6 @@ namespace PaleCourtCharms
         private HeroController _hc => HeroController.instance;
         private PlayerData _pd => PlayerData.instance;
 
-
         private PlayMakerFSM _spellControl;
 
         private PlayMakerFSM _blastControl;
@@ -44,8 +43,6 @@ namespace PaleCourtCharms
             On.HeroController.Start += On_HeroController_Start;
             On.CharmIconList.GetSprite += CharmIconList_GetSprite;
             ModHooks.CharmUpdateHook += CharmUpdate;
-
-            Modding.Logger.Log("[PaleCourtCharms] Amulets initialized.");
         }
         private Sprite CharmIconList_GetSprite(On.CharmIconList.orig_GetSprite orig, CharmIconList self, int id)
         {
@@ -103,7 +100,7 @@ namespace PaleCourtCharms
             ModifyFuryForBloom();
             ModifySpellsForBloom();
 
-            
+            FloristInterop.Init();
 
            
             _activated = true;
@@ -524,14 +521,18 @@ namespace PaleCourtCharms
                 Modding.Logger.LogFine("Adding DamageEnemies");
                 _blastKnight.AddComponent<DamageEnemies>();
                 DamageEnemies damageEnemies = _blastKnight.GetComponent<DamageEnemies>();
-                if (_pd.GetBool("equippedCharm_" + Charms.DeepFocus)) { damageEnemies.damageDealt = 80; }
-                else { damageEnemies.damageDealt = 40; }
+                int baseDamage = 40;
+                float multiplier = 1f;
+                if (_pd.GetBool("equippedCharm_" + Charms.DeepFocus))
+                    multiplier *= 2f;
+                if (FloristInterop.IsEquipped())
+                    multiplier *= 2f;
+                damageEnemies.damageDealt = Mathf.Max(1, Mathf.RoundToInt(baseDamage * multiplier));
                 damageEnemies.attackType = AttackTypes.Spell;
                 damageEnemies.ignoreInvuln = false;
                 damageEnemies.enabled = true;
                 Modding.Logger.LogFine("Playing AudioClip");
                 this.PlayAudio((AudioClip)_pvControl.GetAction<AudioPlayerOneShotSingle>("Focus Burst", 8).audioClip.Value, 1.5f);
-
                 Modding.Logger.LogFine("Audio Clip finished");
                 yield return new WaitForSeconds(.11f);
                 blastCollider.enabled = false;
