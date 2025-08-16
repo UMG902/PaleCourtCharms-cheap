@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 using ItemChanger;
 using ItemChanger.Locations;
 using ItemChanger.Tags;
@@ -10,242 +12,355 @@ using RandomizerCore.Logic;
 using RandomizerCore.Json;
 using RandomizerCore.LogicItems;
 using RandomizerCore;
-using System;
 using ItemChanger.Modules;
 
 namespace PaleCourtCharms.Rando
 {
-   internal static class ItemHandler
-{
-    private const string HonourKey = "Kings_Honour";
-  public static bool ModulesRegistered = false;
-private static bool _objectsDefined = false;
-private static bool _addedToPool = false;
-
-    private static bool _chainTagged = false; 
-public static void Hook()
-{
-   
-    if (!_objectsDefined)
+    internal static class ItemHandler
     {
-        DefineObjects();
-        Finder.GetItemOverride += args =>
+        private const string HonourKey = "Kings_Honour";
+        public static bool ModulesRegistered = false;
+        private static int _objectsDefined = 0;
+        private static int _addToPoolRunning = 0;
+        private static int _subscribed = 0;
+
+        private static readonly object _defineLock = new object();
+        private static int[] _savedVanillaNotchCosts = null;
+
+        public static void Hook()
         {
-            if (!_chainTagged && args.ItemName == ItemNames.Defenders_Crest)
+            if (Interlocked.CompareExchange(ref _objectsDefined, 1, 0) == 0)
             {
-                var crest = Finder.GetItemInternal(ItemNames.Defenders_Crest);
-                args.Current = crest;
-                crest.tags ??= new List<Tag>();
-                crest.tags.Add(new ItemChainTag {
-                    predecessor = ItemNames.Defenders_Crest,
-                    successor   = HonourKey
-                });
-                
-                _chainTagged = true;
+                DefineObjects();
             }
-        };
-        _objectsDefined = true;
-    }
 
-   
-    RequestBuilder.OnUpdate.Subscribe(0f, rb =>
-    {
-        if (PaleCourtCharms.GlobalSettings.AddCharms)
-            AddToPool(rb);
-    });
-
- 
-    RCData.RuntimeLogicOverride.Subscribe(50f, (gs, lmb) =>
-    {
-        if (PaleCourtCharms.GlobalSettings.AddCharms)
-            InjectLogic(gs, lmb);
-    });
-
-    RequestBuilder.OnUpdate.Subscribe(1f, rb =>
-    {
-        if (RandomizerMod.RandomizerMod.RS != null
-            && PaleCourtCharms.GlobalSettings.RandomizeCosts)
-            ScaleNotchBudget(rb);
-    });
-    RequestBuilder.OnUpdate.Subscribe(50f, rb =>
-    {
-        if (RandomizerMod.RandomizerMod.RS != null
-            && PaleCourtCharms.GlobalSettings.RandomizeCosts)
-            RandomizeNotchCosts(rb);
-    });
-
-  
-    RandoController.OnExportCompleted += _ =>
-    {
-        _addedToPool    = false;
-        _objectsDefined = false;
-        _chainTagged    = false;
-
-        DefineObjects();
-        _objectsDefined = true;
-
-        
-        RequestBuilder.OnUpdate.Subscribe(0f, rb =>
-        {
-            if (PaleCourtCharms.GlobalSettings.AddCharms)
-                AddToPool(rb);
-        });
-        RCData.RuntimeLogicOverride.Subscribe(50f, (gs, lmb) =>
-        {
-            if (PaleCourtCharms.GlobalSettings.AddCharms)
-                InjectLogic(gs, lmb);
-        });
-        RequestBuilder.OnUpdate.Subscribe(1f, rb =>
-        {
-            if (RandomizerMod.RandomizerMod.RS != null
-                && PaleCourtCharms.GlobalSettings.RandomizeCosts)
-                ScaleNotchBudget(rb);
-        });
-        RequestBuilder.OnUpdate.Subscribe(50f, rb =>
-        {
-            if (RandomizerMod.RandomizerMod.RS != null
-                && PaleCourtCharms.GlobalSettings.RandomizeCosts)
-                RandomizeNotchCosts(rb);
-        });
-
-        bool randoDoesCost = RandomizerMod.RandomizerMod.RS?
-                                .GenerationSettings?
-                                .MiscSettings?
-                                .RandomizeNotchCosts ?? false;
-
-        if (PaleCourtCharms.GlobalSettings.RandomizeCosts
-            && !randoDoesCost
-            && !ModulesRegistered)
-        {
-            
-            ItemChangerMod.Modules.Add<NotchCostUI>();
-            ItemChangerMod.Modules.Add<ZeroCostCharmEquip>();
-            ModulesRegistered = true;
-        }
-       
-       
-        var crest = Finder.GetItemInternal(ItemNames.Defenders_Crest);
-        if (crest?.tags != null)
-        {
-            var removed = crest.tags.RemoveAll(t =>
-                t is ItemChainTag ict && ict.successor == HonourKey);
-            if (removed > 0)
-                Modding.Logger.Log($"[PaleCourtCharms] Cleaned up {removed} leftover Crest chain tag(s).");
-        }
-
-        
-    };
-}
-
-
-
-
-    private static void DefineObjects()
-    {
-      
-        for (int i = 0; i < PaleCourtCharms.CharmKeys.Length; i++)
-        {
-            string key = PaleCourtCharms.CharmKeys[i];
-            if (Finder.GetItemInternal(key) == null)
-                Finder.DefineCustomItem(new PC_CharmItem(i));
-
-            if (Finder.GetLocationInternal(key) == null)
+            if (Interlocked.CompareExchange(ref _subscribed, 1, 0) == 0)
             {
-                var loc = new CoordinateLocation
+                RequestBuilder.OnUpdate.Subscribe(0f, rb =>
                 {
-                    name = key,
-                    sceneName = ICShiny.CharmScenes[i],
-                    x = ICShiny.CharmPositions[i].x,
-                    y = ICShiny.CharmPositions[i].y,
-                    elevation = 0
-                };
-                var tag = loc.AddTag<InteropTag>();
-                tag.Message = "RandoSupplementalMetadata";
-                tag.Properties["ModSource"] = PaleCourtCharms.Instance.GetName();
-                tag.Properties["PoolGroup"] = PoolNames.Charm;
-                tag.Properties["VanillaItem"] = key;
-
-                    if (key == "Boon_of_Hallownest")
+                    int opId = Environment.TickCount;
+                    try
                     {
-                        tag.Properties["MapLocations"] = new (string scene, float x, float y)[]
+                        if (PaleCourtCharms.GlobalSettings.AddCharms)
+                            AddToPool(rb);
+                    }
+                    catch (Exception e)
+                    {
+                        Modding.Logger.LogError($"[PaleCourtCharms] AddToPool exception (op {opId}): {e}");
+                        throw;
+                    }
+                });
+
+                RequestBuilder.OnUpdate.Subscribe(1f, rb =>
+                {
+                    int opId = Environment.TickCount;
+                    try
+                    {
+                        if (RandomizerMod.RandomizerMod.RS != null
+                            && PaleCourtCharms.GlobalSettings.RandomizeCosts)
+                            ScaleNotchBudget(rb);
+                    }
+                    catch (Exception e)
+                    {
+                        Modding.Logger.LogError($"[PaleCourtCharms] ScaleNotchBudget exception (op {opId}): {e}");
+                        throw;
+                    }
+                });
+
+                RequestBuilder.OnUpdate.Subscribe(50f, rb =>
+                {
+                    int opId = Environment.TickCount;
+                    try
+                    {
+                        if (RandomizerMod.RandomizerMod.RS != null
+                            && PaleCourtCharms.GlobalSettings.RandomizeCosts)
+                            RandomizeNotchCosts(rb);
+                    }
+                    catch (Exception e)
+                    {
+                        Modding.Logger.LogError($"[PaleCourtCharms] RandomizeNotchCosts exception (op {opId}): {e}");
+                        throw;
+                    }
+                });
+
+                RCData.RuntimeLogicOverride.Subscribe(50f, (gs, lmb) =>
+                {
+                    int opId = Environment.TickCount;
+                    try
+                    {
+                        if (PaleCourtCharms.GlobalSettings.AddCharms)
+                            InjectLogic(gs, lmb);
+                    }
+                    catch (Exception e)
+                    {
+                        Modding.Logger.LogError($"[PaleCourtCharms] InjectLogic exception (op {opId}): {e}");
+                        throw;
+                    }
+                });
+            }
+
+            RequestBuilder.OnUpdate.Subscribe(-100f, rb =>
+            {
+                try
+                {
+                    if (_savedVanillaNotchCosts == null && rb?.ctx?.notchCosts != null)
+                    {
+                        _savedVanillaNotchCosts = rb.ctx.notchCosts.ToArray();
+                        Modding.Logger.Log("[PaleCourtCharms] Saved vanilla notch costs.");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Modding.Logger.LogError($"[PaleCourtCharms] Error saving vanilla notch costs: {e}");
+                }
+            });
+
+            RequestBuilder.OnUpdate.Subscribe(100f, rb =>
+            {
+                try
+                {
+                    bool randoDoesCost = RandomizerMod.RandomizerMod.RS?
+                                            .GenerationSettings?
+                                            .MiscSettings?
+                                            .RandomizeNotchCosts ?? false;
+
+                    if (randoDoesCost && !PaleCourtCharms.GlobalSettings.RandomizeCosts)
+                    {
+                        var defaultCosts = new List<int>();
+                        int nDefaults = PaleCourtCharms.CharmKeys.Length;
+                        for (int i = 0; i < nDefaults; i++)
+                            defaultCosts.Add(i < PaleCourtCharms.CharmCosts.Length ? PaleCourtCharms.CharmCosts[i] : 0);
+                        try
                         {
-                           ("Fungus2_21", 122.77f, 12.15f)
-                        };
-                        tag.Properties["HighlightScenes"] = new string[] { "Fungus2_21" };
+                            var nc = rb.ctx.notchCosts;
+                            if (nc != null)
+                            {
+                                nc.Clear();
+                                nc.AddRange(defaultCosts);
+                            }
+                            else
+                            {
+                                rb.ctx.notchCosts = new List<int>(defaultCosts);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Modding.Logger.LogError($"[PaleCourtCharms] Could not write rb.ctx.notchCosts: {ex}");
+                        }
 
+                        PaleCourtCharms.Settings.notchCosts = new List<int>(defaultCosts);
 
-                        tag.Properties["WorldMapLocation"] = ("Fungus2_21", 122.77f, 12.15f);
+                        int m = Math.Min(PaleCourtCharms.CharmIDs.Count, defaultCosts.Count);
+                        for (int i = 0; i < m; i++)
+                        {
+                            int id = PaleCourtCharms.CharmIDs[i];
+                            PaleCourtCharms.CharmCostsByID[id] = defaultCosts[i];
+                        }
 
+                        Modding.Logger.Log("[PaleCourtCharms] Forced default notch costs because Randomizer did costs but user opted out.");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Modding.Logger.LogError($"[PaleCourtCharms] Error forcing default notch costs: {e}");
+                }
+            });
+
+            RandoController.OnExportCompleted += _ =>
+            {
+                _savedVanillaNotchCosts = null;
+
+                lock (_defineLock)
+                {
+                    try
+                    {
+                        DefineObjects();
+                        Interlocked.Exchange(ref _objectsDefined, 1);
+                    }
+                    catch (Exception e)
+                    {
+                        Modding.Logger.LogError($"[PaleCourtCharms] Exception in DefineObjects during OnExportCompleted: {e}");
+                    }
+                }
+
+                bool randoDoesCost = RandomizerMod.RandomizerMod.RS?
+                                        .GenerationSettings?
+                                        .MiscSettings?
+                                        .RandomizeNotchCosts ?? false;
+
+                if (PaleCourtCharms.GlobalSettings.RandomizeCosts
+                    && !randoDoesCost
+                    && !ModulesRegistered)
+                {
+                    try
+                    {
+                        ItemChangerMod.Modules.Add<NotchCostUI>();
+                        ItemChangerMod.Modules.Add<ZeroCostCharmEquip>();
+                        ModulesRegistered = true;
+                    }
+                    catch (Exception e)
+                    {
+                        Modding.Logger.LogError($"[PaleCourtCharms] Failed to register modules: {e}");
+                    }
+                }
+
+                try
+                {
+                    var crest = Finder.GetItemInternal(ItemNames.Defenders_Crest);
+                    if (crest?.tags != null)
+                    {
+                        var removed = crest.tags.RemoveAll(t =>
+                            t is ItemChainTag ict && ict.successor == HonourKey);
+                        if (removed > 0)
+                            Modding.Logger.Log($"[PaleCourtCharms] Cleaned up {removed} leftover Crest chain tag(s).");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Modding.Logger.LogError($"[PaleCourtCharms] Exception during crest cleanup: {e}");
+                }
+            };
+        }
+
+        private static void DefineObjects()
+        {
+            lock (_defineLock)
+            {
+                try
+                {
+                    for (int i = 0; i < PaleCourtCharms.CharmKeys.Length; i++)
+                    {
+                        string key = PaleCourtCharms.CharmKeys[i];
+                        if (Finder.GetItemInternal(key) == null)
+                            Finder.DefineCustomItem(new PC_CharmItem(i));
+
+                        if (Finder.GetLocationInternal(key) == null)
+                        {
+                            var loc = new CoordinateLocation
+                            {
+                                name = key,
+                                sceneName = ICShiny.CharmScenes[i],
+                                x = ICShiny.CharmPositions[i].x,
+                                y = ICShiny.CharmPositions[i].y,
+                                elevation = 0
+                            };
+                            var tag = loc.AddTag<InteropTag>();
+                            tag.Message = "RandoSupplementalMetadata";
+                            tag.Properties["ModSource"] = PaleCourtCharms.Instance.GetName();
+                            tag.Properties["PoolGroup"] = PoolNames.Charm;
+                            tag.Properties["VanillaItem"] = key;
+
+                            if (key == "Boon_of_Hallownest")
+                            {
+                                tag.Properties["MapLocations"] = new (string scene, float x, float y)[]
+                                {
+                                    ("Fungus2_21", 122.77f, 12.15f)
+                                };
+                                tag.Properties["HighlightScenes"] = new string[] { "Fungus2_21" };
+                                tag.Properties["WorldMapLocation"] = ("Fungus2_21", 122.77f, 12.15f);
+                            }
+
+                            Finder.DefineCustomLocation(loc);
+                        }
                     }
 
+                    if (Finder.GetItemInternal(HonourKey) == null)
+                        Finder.DefineCustomItem(new HonourUpgradeItem());
 
-                Finder.DefineCustomLocation(loc);
-            }
-        }
-
-        if (Finder.GetItemInternal(HonourKey) == null)
-            Finder.DefineCustomItem(new HonourUpgradeItem());
-
-        if (Finder.GetLocationInternal(HonourKey) == null)
-        {
-            var honourLoc = new CoordinateLocation
-            {
-                name = HonourKey,
-                sceneName = ICShiny.HonourScene,
-                x = ICShiny.HonourPos.x,
-                y = ICShiny.HonourPos.y,
-                elevation = 0
-            };
-            var tag = honourLoc.AddTag<InteropTag>();
-            tag.Message = "RandoSupplementalMetadata";
-            tag.Properties["ModSource"] = PaleCourtCharms.Instance.GetName();
-            tag.Properties["PoolGroup"] = PoolNames.Charm;
-            tag.Properties["VanillaItem"] = HonourKey;
-            Finder.DefineCustomLocation(honourLoc);
-        }
-    }
-
-private static void AddToPool(RequestBuilder rb)
-{
-    if (_addedToPool) return;
-    _addedToPool = true;
-
-    foreach (var key in PaleCourtCharms.CharmKeys.Concat(new[] { HonourKey }))
-    {
-        rb.RemoveLocationByName(key);
-        rb.AddLocationByName(key);
-        rb.AddItemByName(key);
-        rb.EditItemRequest(key, info =>
-        {
-            info.getItemDef = () => new ItemDef {
-                Name      = key,
-                Pool      = PoolNames.Charm,
-                MajorItem = false,
-                PriceCap  = 2000
-            };
-
-          
-            if (key == HonourKey
-                && rb.gs.PoolSettings.Charms)
-            {
-                info.realItemCreator = (factory, placement) =>
+                    if (Finder.GetLocationInternal(HonourKey) == null)
+                    {
+                        var honourLoc = new CoordinateLocation
+                        {
+                            name = HonourKey,
+                            sceneName = ICShiny.HonourScene,
+                            x = ICShiny.HonourPos.x,
+                            y = ICShiny.HonourPos.y,
+                            elevation = 0
+                        };
+                        var tag = honourLoc.AddTag<InteropTag>();
+                        tag.Message = "RandoSupplementalMetadata";
+                        tag.Properties["ModSource"] = PaleCourtCharms.Instance.GetName();
+                        tag.Properties["PoolGroup"] = PoolNames.Charm;
+                        tag.Properties["VanillaItem"] = HonourKey;
+                        Finder.DefineCustomLocation(honourLoc);
+                    }
+                }
+                catch (Exception e)
                 {
-                    var item = factory.MakeItem(HonourKey);
-                    item.tags ??= new List<Tag>();
-                    item.tags.Add(new ItemChainTag {
-                        predecessor = ItemNames.Defenders_Crest,
-                        successor   = HonourKey
-                    });
-                    
-                    return item;
-                };
+                    Modding.Logger.LogError($"[PaleCourtCharms] DefineObjects threw: {e}");
+                    throw;
+                }
             }
-        });
-    }
+        }
 
-   
-}
+        private static void AddToPool(RequestBuilder rb)
+        {
+            if (Interlocked.CompareExchange(ref _addToPoolRunning, 1, 0) == 1)
+                return;
 
+            try
+            {
+                int opId = Environment.TickCount;
+                Modding.Logger.Log($"[PaleCourtCharms] AddToPool start (op {opId})");
+
+                foreach (var key in PaleCourtCharms.CharmKeys.Concat(new[] { HonourKey }))
+                {
+                    try
+                    {
+                        rb.RemoveLocationByName(key);
+                        rb.AddLocationByName(key);
+                        rb.AddItemByName(key);
+                        rb.EditItemRequest(key, info =>
+                        {
+                            info.getItemDef = () => new ItemDef
+                            {
+                                Name = key,
+                                Pool = PoolNames.Charm,
+                                MajorItem = false,
+                                PriceCap = 2000
+                            };
+
+                            if (key == HonourKey && rb.gs.PoolSettings.Charms)
+                            {
+                                info.realItemCreator = (factory, placement) =>
+                                {
+                                    var item = factory.MakeItem(HonourKey);
+                                    item.tags ??= new List<Tag>();
+                                    item.tags.Add(new ItemChainTag
+                                    {
+                                        predecessor = ItemNames.Defenders_Crest,
+                                        successor = HonourKey
+                                    });
+                                    return item;
+                                };
+                            }
+                        });
+                    }
+                    catch (Exception exInner)
+                    {
+                        Modding.Logger.LogError($"[PaleCourtCharms] AddToPool: failed handling key {key}: {exInner}");
+                        throw;
+                    }
+                }
+
+                Modding.Logger.Log($"[PaleCourtCharms] AddToPool completed (op {opId})");
+            }
+            catch (ThreadAbortException)
+            {
+                Modding.Logger.LogWarn($"[PaleCourtCharms] AddToPool aborted by thread (ThreadAbortException).");
+                throw;
+            }
+            catch (Exception e)
+            {
+                Modding.Logger.LogError($"[PaleCourtCharms] AddToPool threw: {e}");
+                throw;
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _addToPoolRunning, 0);
+                Modding.Logger.Log("[PaleCourtCharms] AddToPool cleaned up running flag.");
+            }
+        }
 
         private static void ScaleNotchBudget(RequestBuilder rb)
         {
@@ -256,16 +371,16 @@ private static void AddToPool(RequestBuilder rb)
 
         private static void RandomizeNotchCosts(RequestBuilder rb)
         {
-            var rng          = rb.rng;
+            var rng = rb.rng;
             int vanillaTotal = rb.ctx.notchCosts.Sum();
-            int minTotal     = rb.gs.MiscSettings.MinRandomNotchTotal;
-            int maxTotal     = rb.gs.MiscSettings.MaxRandomNotchTotal;
-            int variance     = maxTotal - minTotal;
-            int n            = PaleCourtCharms.CharmKeys.Length;
+            int minTotal = rb.gs.MiscSettings.MinRandomNotchTotal;
+            int maxTotal = rb.gs.MiscSettings.MaxRandomNotchTotal;
+            int variance = maxTotal - minTotal;
+            int n = PaleCourtCharms.CharmKeys.Length;
 
             int minCount = Math.Max(0, (vanillaTotal - variance) / 10);
             int maxCount = Math.Min(n * 6, (vanillaTotal + variance) / 10);
-            int count    = rng.Next(minCount, maxCount + 1);
+            int count = rng.Next(minCount, maxCount + 1);
 
             var costs = new int[n];
             for (int i = 0; i < count; i++)
@@ -279,21 +394,28 @@ private static void AddToPool(RequestBuilder rb)
             PaleCourtCharms.Settings.notchCosts = costs.ToList();
             for (int i = 0; i < n; i++)
                 PaleCourtCharms.CharmCostsByID[PaleCourtCharms.CharmIDs[i]] = costs[i];
-
         }
 
         private static void InjectLogic(GenerationSettings gs, LogicManagerBuilder lmb)
         {
-            foreach (var key in PaleCourtCharms.CharmKeys)
-                lmb.AddItem(new SingleItem(key, new TermValue(lmb.GetOrAddTerm(key), 1)));
-            lmb.AddItem(new SingleItem(HonourKey, new TermValue(lmb.GetOrAddTerm(HonourKey), 1)));
+            try
+            {
+                foreach (var key in PaleCourtCharms.CharmKeys)
+                    lmb.AddItem(new SingleItem(key, new TermValue(lmb.GetOrAddTerm(key), 1)));
+                lmb.AddItem(new SingleItem(HonourKey, new TermValue(lmb.GetOrAddTerm(HonourKey), 1)));
 
-            LoadAdditionalLogicFiles(lmb);
+                LoadAdditionalLogicFiles(lmb);
+            }
+            catch (Exception e)
+            {
+                Modding.Logger.LogError($"[PaleCourtCharms] InjectLogic threw: {e}");
+                throw;
+            }
         }
 
         private static void LoadAdditionalLogicFiles(LogicManagerBuilder lmb)
         {
-            var modDir  = System.IO.Path.GetDirectoryName(typeof(ItemHandler).Assembly.Location);
+            var modDir = System.IO.Path.GetDirectoryName(typeof(ItemHandler).Assembly.Location);
             var jsonFmt = new JsonLogicFormat();
 
             void TryLoad(string file, LogicFileType type)
@@ -314,3 +436,4 @@ private static void AddToPool(RequestBuilder rb)
         }
     }
 }
+
