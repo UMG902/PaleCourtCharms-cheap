@@ -10,3 +10,6 @@ Scales spale size the same as Shaman Amp does.
 Slows down daggers the same way Snail Soul slows down fireballs.
 
 If Vepsa's Vengence is equiped,wraiths will be replaced with bees and not Boon Blasts.
+
+# Vessel's Lament
+If florist's blessing is equipped,damage of blasts is doubled(can be doubled again(so,quadrupled) with deep focus).
