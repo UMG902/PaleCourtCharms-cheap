@@ -26,12 +26,51 @@ namespace PaleCourtCharms.Rando
 
         private static readonly object _defineLock = new object();
         private static int[] _savedVanillaNotchCosts = null;
+        private static int _crestChainTagged = 0;
+        private static int _crestOverrideSubscribed = 0;
+        private static ItemChanger.AbstractItem _crestDefCache = null;
 
         public static void Hook()
         {
             if (Interlocked.CompareExchange(ref _objectsDefined, 1, 0) == 0)
             {
                 DefineObjects();
+                if (Interlocked.CompareExchange(ref _crestOverrideSubscribed, 1, 0) == 0)
+                {
+                    Finder.GetItemOverride += args =>
+                    {
+                        try
+                        {
+                            if (args.ItemName != ItemNames.Defenders_Crest) return;
+
+                            var crest = _crestDefCache;
+                            if (crest != null)
+                            {
+                                if (Interlocked.CompareExchange(ref _crestChainTagged, 1, 0) == 0)
+                                {
+                                    crest.tags ??= new List<Tag>();
+                                    bool has = crest.tags.OfType<ItemChainTag>()
+                                        .Any(t => t.predecessor == ItemNames.Defenders_Crest && t.successor == HonourKey);
+                                    if (!has)
+                                    {
+                                        crest.tags.Add(new ItemChainTag
+                                        {
+                                            predecessor = ItemNames.Defenders_Crest,
+                                            successor = HonourKey
+                                        });
+                                        Modding.Logger.Log("[PaleCourtCharms] (override) Added chain tag to Defenders_Crest -> Kings_Honour");
+                                    }
+                                }
+
+                                args.Current = crest;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Modding.Logger.LogError($"[PaleCourtCharms] GetItemOverride error for crest: {e}");
+                        }
+                    };
+                }
             }
 
             if (Interlocked.CompareExchange(ref _subscribed, 1, 0) == 0)
@@ -106,7 +145,6 @@ namespace PaleCourtCharms.Rando
                     if (_savedVanillaNotchCosts == null && rb?.ctx?.notchCosts != null)
                     {
                         _savedVanillaNotchCosts = rb.ctx.notchCosts.ToArray();
-                        Modding.Logger.Log("[PaleCourtCharms] Saved vanilla notch costs.");
                     }
                 }
                 catch (Exception e)
@@ -156,8 +194,6 @@ namespace PaleCourtCharms.Rando
                             int id = PaleCourtCharms.CharmIDs[i];
                             PaleCourtCharms.CharmCostsByID[id] = defaultCosts[i];
                         }
-
-                        Modding.Logger.Log("[PaleCourtCharms] Forced default notch costs because Randomizer did costs but user opted out.");
                     }
                 }
                 catch (Exception e)
@@ -202,22 +238,6 @@ namespace PaleCourtCharms.Rando
                     {
                         Modding.Logger.LogError($"[PaleCourtCharms] Failed to register modules: {e}");
                     }
-                }
-
-                try
-                {
-                    var crest = Finder.GetItemInternal(ItemNames.Defenders_Crest);
-                    if (crest?.tags != null)
-                    {
-                        var removed = crest.tags.RemoveAll(t =>
-                            t is ItemChainTag ict && ict.successor == HonourKey);
-                        if (removed > 0)
-                            Modding.Logger.Log($"[PaleCourtCharms] Cleaned up {removed} leftover Crest chain tag(s).");
-                    }
-                }
-                catch (Exception e)
-                {
-                    Modding.Logger.LogError($"[PaleCourtCharms] Exception during crest cleanup: {e}");
                 }
             };
         }
@@ -290,6 +310,15 @@ namespace PaleCourtCharms.Rando
                     Modding.Logger.LogError($"[PaleCourtCharms] DefineObjects threw: {e}");
                     throw;
                 }
+                try
+                {
+                    _crestDefCache = Finder.GetItemInternal(ItemNames.Defenders_Crest);
+                }
+                catch (Exception e)
+                {
+                    Modding.Logger.LogError($"[PaleCourtCharms] Error caching crest ItemDef: {e}");
+                }
+
             }
         }
 
@@ -301,7 +330,6 @@ namespace PaleCourtCharms.Rando
             try
             {
                 int opId = Environment.TickCount;
-                Modding.Logger.Log($"[PaleCourtCharms] AddToPool start (op {opId})");
 
                 foreach (var key in PaleCourtCharms.CharmKeys.Concat(new[] { HonourKey }))
                 {
@@ -342,8 +370,6 @@ namespace PaleCourtCharms.Rando
                         throw;
                     }
                 }
-
-                Modding.Logger.Log($"[PaleCourtCharms] AddToPool completed (op {opId})");
             }
             catch (ThreadAbortException)
             {
