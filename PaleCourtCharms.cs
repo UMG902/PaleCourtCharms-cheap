@@ -79,7 +79,7 @@ namespace PaleCourtCharms
 
         public static SaveModSettings Settings => Instance?.localSettings;
 
-        public override string GetVersion() => "1.3.1";
+        public override string GetVersion() => "1.3.2";
 
         public PaleCourtCharms() : base("PaleCourtCharms")
         {
@@ -274,92 +274,111 @@ namespace PaleCourtCharms
         }
 
         public void StartGame()
-{
-       var gmObj = GameManager.instance.gameObject;
-   
-    if (gmObj.GetComponent<Amulets>() == null)
-    {
-        gmObj.AddComponent<Amulets>();
-    }
-}
 
-public static bool IsRandoSave()
-{
-    
-    if (ModHooks.GetMod("Randomizer 4") is Mod)
-    {
-        try
         {
-            var rm = ItemChangerMod.Modules.Get<RandomizerModule>();
-            return rm != null;
-        }
-        catch (NullReferenceException)
-        {
-            return false;
-        }
-    }
-    return false;
-}
+            var gmObj = GameManager.instance.gameObject;
 
-
-       private int OnGetPlayerIntHook(string target, int orig)
-        {
-           
-            if (target.StartsWith("charmCost_")
-                && int.TryParse(target.Split('_')[1], out var charmNum))
+            if (gmObj.GetComponent<Amulets>() == null)
             {
-               
-                if (!IsRandoSave())
-                {
-                   
-                    int idx = PaleCourtCharms.CharmIDs.IndexOf(charmNum);
-                    if (idx >= 0 && idx < PaleCourtCharms.CharmCosts.Length)
-                        return PaleCourtCharms.CharmCosts[idx];
-                }
-                else if (PaleCourtCharms.CharmCostsByID.TryGetValue(charmNum, out var cost))
-                {
-                   
-                    return cost;
-                }
+                gmObj.AddComponent<Amulets>();
             }
-            return orig;
+
+        }
+        private static bool? _cachedIsRando = null;
+
+        private static bool GetIsRando_Reflection()
+        {
+            if (_cachedIsRando.HasValue) return _cachedIsRando.Value;
+
+            if (!(ModHooks.GetMod("Randomizer 4") is Mod))
+            {
+                _cachedIsRando = false;
+                return false;
+            }
+
+            try
+            {
+                var randType = Type.GetType("RandomizerMod.RandomizerMod, RandomizerMod");
+                if (randType == null)
+                {
+                    _cachedIsRando = false;
+                    return false;
+                }
+
+                var rs = randType.GetProperty("RS", BindingFlags.Public | BindingFlags.Static)?.GetValue(null);
+                var genSettings = rs?.GetType().GetProperty("GenerationSettings", BindingFlags.Public | BindingFlags.Instance)?.GetValue(rs);
+
+                _cachedIsRando = genSettings != null;
+                return _cachedIsRando.Value;
+            }
+            catch (Exception ex)
+            {
+                Instance?.Log($"[GetIsRando_Reflection] reflection check failed: {ex.Message}");
+                _cachedIsRando = false;
+                return false;
+            }
         }
 
+        public static bool IsRandoSave() => GetIsRando_Reflection();
 
-       private bool OnSetPlayerBool(string target, bool value)
-{
-    if (CharmIDs.Count == 0) return value;
-
-    var parts = target.Split('_');
-    if (parts.Length == 2 && int.TryParse(parts[1], out var charmNum))
-    {
-        var idx = CharmIDs.IndexOf(charmNum);
-        if (idx >= 0)
-        {
-            switch (parts[0])
+        private int OnGetPlayerIntHook(string target, int orig)
             {
-                case "equippedCharm":
-                    localSettings.equippedCharms[idx] = value;
-                    return true;
-                case "gotCharm":
-                    localSettings.gotCharms[idx] = value;
-
-                    if (value)
+            
+                if (target.StartsWith("charmCost_")
+                    && int.TryParse(target.Split('_')[1], out var charmNum))
+                {
+                
+                    if (!IsRandoSave())
                     {
-                        
-                        GameManager.instance.SaveGame();
+                    
+                        int idx = PaleCourtCharms.CharmIDs.IndexOf(charmNum);
+                        if (idx >= 0 && idx < PaleCourtCharms.CharmCosts.Length)
+                            return PaleCourtCharms.CharmCosts[idx];
                     }
-
-                    return true;
-                case "newCharm":
-                    localSettings.newCharms[idx] = value;
-                    return true;
+                    else if (PaleCourtCharms.CharmCostsByID.TryGetValue(charmNum, out var cost))
+                    {
+                    
+                        return cost;
+                    }
+                }
+                return orig;
             }
-        }
-    }
 
-    return value;
-}
+
+        private bool OnSetPlayerBool(string target, bool value)
+        {
+            if (CharmIDs.Count == 0) return value;
+
+            var parts = target.Split('_');
+            if (parts.Length == 2 && int.TryParse(parts[1], out var charmNum))
+            {
+                var idx = CharmIDs.IndexOf(charmNum);
+                if (idx >= 0)
+                {
+                    switch (parts[0])
+                    {
+                        case "equippedCharm":
+                            localSettings.equippedCharms[idx] = value;
+                            return true;
+                        case "gotCharm":
+                            localSettings.gotCharms[idx] = value;
+
+                            if (value)
+                            {
+
+                                GameManager.instance.SaveGame();
+                            }
+
+                            return true;
+                        case "newCharm":
+                            localSettings.newCharms[idx] = value;
+                            return true;
+                    }
+                }
+            }
+
+            return value;
+        }
 
         private bool ModHooks_GetPlayerBool(string target, bool orig)
         {
