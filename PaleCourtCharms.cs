@@ -79,7 +79,7 @@ namespace PaleCourtCharms
 
         public static SaveModSettings Settings => Instance?.localSettings;
 
-        public override string GetVersion() => "1.3.2";
+        public override string GetVersion() => "1.3.3";
 
         public PaleCourtCharms() : base("PaleCourtCharms")
         {
@@ -514,5 +514,6 @@ namespace PaleCourtCharms
     public string LogicSettings { get; set; } = "{}";
   }
 } 
+
 
 
