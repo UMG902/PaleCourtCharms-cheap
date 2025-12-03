@@ -27,16 +27,16 @@ namespace PaleCourtCharms
         //private const float PURITY_DURATION_18 = 1.9f;
         // private const float PURITY_DURATION_13 = 2.1f;
         // private const float PURITY_DURATION_18_13 = 2.25f;
-        private const float ATTACK_COOLDOWN_DEFAULT = .41f;
-        private const float ATTACK_COOLDOWN_DEFAULT_32 = .25f;
-        private const float ATTACK_COOLDOWN_44 = .49f;
-        private const float ATTACK_COOLDOWN_44_32 = .31f;
+        private const float ATTACK_COOLDOWN_DEFAULT = .4f;
+        private const float ATTACK_COOLDOWN_DEFAULT_32 = .2f;
+        private const float ATTACK_COOLDOWN_44 = .4f;
+        private const float ATTACK_COOLDOWN_44_32 = .2f;
         private const float ATTACK_DURATION_DEFAULT = .35f;
         private const float ATTACK_DURATION_DEFAULT_32 = .28f;
-        private const float ATTACK_DURATION_44 = .44f;
+        private const float ATTACK_DURATION_44 = .35f;
         private const float ATTACK_DURATION_44_32 = .25f;
-        private const float COOLDOWN_CAP_44 = .17f;
-        private const float COOLDOWN_CAP_44_32 = .13f;
+        private const float COOLDOWN_CAP_44 = .09f;
+        private const float COOLDOWN_CAP_44_32 = .05f;
         private HeroController _hc = HeroController.instance;
         private PlayerData _pd = PlayerData.instance;
         private List<NailSlash> nailSlashes;
@@ -290,4 +290,5 @@ namespace PaleCourtCharms
         
     }
     
+
 }
