@@ -35,7 +35,7 @@ namespace PaleCourtCharms
         private const float ATTACK_DURATION_DEFAULT_32 = .28f;
         private const float ATTACK_DURATION_44 = .35f;
         private const float ATTACK_DURATION_44_32 = .25f;
-        private const float COOLDOWN_CAP_44 = .09f;
+        private const float COOLDOWN_CAP_44 = .1f;
         private const float COOLDOWN_CAP_44_32 = .05f;
         private HeroController _hc = HeroController.instance;
         private PlayerData _pd = PlayerData.instance;
@@ -110,7 +110,7 @@ namespace PaleCourtCharms
                 if (timer >= duration)
                 {
                     timerRunning = false;
-                    if (!_pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME <= .48f || _pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME_CH <= .3f)
+                    if (!_pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME <= .39f || _pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME_CH <= .19f)
                     {
                         
                         this.PlayAudio(ABManager.LoadFromUnlocks<AudioClip>("purity_reset"), 1f);
@@ -136,7 +136,7 @@ namespace PaleCourtCharms
         private int ResetSpeed(int hazardType, int damageAmount)
         {
             timerRunning = false;
-            if (!_pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME <= .48f || _pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME_CH <= .3f)
+            if (!_pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME <= .39f || _pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME_CH <= .19f)
             {
                 
                 this.PlayAudio(ABManager.LoadFromUnlocks<AudioClip>("purity_reset"),1f);
@@ -163,7 +163,7 @@ namespace PaleCourtCharms
         {
            if (hitInstance.AttackType == AttackTypes.Nail || hitInstance.AttackType == AttackTypes.NailBeam)
             {
-                hitInstance.Multiplier *= .8f;
+                hitInstance.Multiplier *= 1f;
             }
             orig(self, hitInstance);
                     
@@ -181,12 +181,12 @@ namespace PaleCourtCharms
                     _hc.ATTACK_DURATION_CH -= (ATTACK_COOLDOWN_44_32 - COOLDOWN_CAP_44_32) / 11;
 
                 }
-                if (_hc.ATTACK_COOLDOWN_TIME_CH <= .17f)
+                if (_hc.ATTACK_COOLDOWN_TIME_CH <= .09f)
                 {
                     ReflectionHelper.SetField<HealthManager, float>(self, "evasionByHitRemaining", 0.1f);
                 }
 
-                if (!_pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME <= .18f && !audioMax || _pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME_CH <= .14f && !audioMax)     
+                if (!_pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME <= .09f && !audioMax || _pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME_CH <= .05f && !audioMax)     
                 {
                     audioMax = true;
                     
@@ -238,7 +238,7 @@ namespace PaleCourtCharms
             _hc.ATTACK_DURATION -= (ATTACK_COOLDOWN_44 - COOLDOWN_CAP_44) / 9;
             _hc.ATTACK_DURATION_CH -= (ATTACK_COOLDOWN_44_32 - COOLDOWN_CAP_44_32) / 11;
 
-            if (!_pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME <= .18f && !audioMax || _pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME_CH <= .14f && !audioMax)
+            if (!_pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME <= .09f && !audioMax || _pd.equippedCharm_32 && _hc.ATTACK_COOLDOWN_TIME_CH <= .05f && !audioMax)
             {
                 audioMax = true;
                 
@@ -292,3 +292,4 @@ namespace PaleCourtCharms
     
 
 }
+
